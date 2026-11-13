@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Bicifriendly">
+<meta name="description" content="Cafés, bares y lugares bikefriendly de Santiago, con datos de la comunidad ciclista.">
+<title>Bicifriendly · Lugares para ciclistas en Santiago</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Overpass:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: none;
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: none;
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: none;
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+</style>
+<style>
+/* Layout: app de pantalla completa. Escritorio = lista a la izquierda + mapa fijo a la derecha.
+   Celular = una vista a la vez, con barra inferior Lista / Mapa. Tema único negro y naranjo. */
+:root {
+  --black: #000000;
+  --s1: #141414;
+  --s2: #1F1F1F;
+  --line: #2E2E2E;
+  --ink: #F5F5F5;
+  --muted: #A0A0A0;
+  --orange: #FF7A1A;
+  --orange-ink: #000000;
+  --c-cafe: #FF7A1A;
+  --c-bar: #B99AFF;
+  --c-rapida: #FF6B63;
+  --c-rest: #4FD18B;
+  --c-punto: #5CC8FF;
+  --font-display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "Overpass", "Segoe UI", system-ui, sans-serif;
+  --r: 0px;
+  --slant: 9px;   /* inclinación de los filtros, como demarcación de ciclovía */
+  --tip: 14px;    /* punta de las flechas de navegación */
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--black); color: var(--ink); font: 15px/1.45 var(--font-body); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.app { height: 100%; display: grid; grid-template-rows: auto auto 1fr; }
+.t-cafe { --cat: var(--c-cafe); }
+.t-bar { --cat: var(--c-bar); }
+.t-rapida { --cat: var(--c-rapida); }
+.t-restaurant { --cat: var(--c-rest); }
+.t-punto { --cat: var(--c-punto); }
+
+/* Encabezado */
+.head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; margin: 0; font: 900 30px/0.9 var(--font-display); letter-spacing: 0.005em; white-space: nowrap; }
+.brand b { color: var(--orange); font-weight: 900; }
+.brand svg { width: 30px; height: 30px; stroke: var(--orange); stroke-width: 1.8; }
+.search { flex: 1 1 260px; max-width: 520px; display: flex; align-items: center; gap: 10px; background: var(--s1); border: 0; border-bottom: 3px solid var(--line); padding: 0 12px; }
+.search:focus-within { border-bottom-color: var(--orange); }
+.search svg { color: var(--muted); }
+.search input { flex: 1; min-width: 0; height: 44px; border: 0; background: transparent; color: var(--ink); font: 600 15px var(--font-body); outline: none; padding-top: 3px; }
+.search input::placeholder { color: #7A7A7A; }
+
+/* Filtros */
+.filters { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--line); }
+.fgroup { display: flex; flex-wrap: wrap; gap: 6px; }
+.fbtn { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 2px calc(var(--slant) + 10px) 0; background: var(--s2); border: 0; cursor: pointer; font-weight: 700; font-size: 14px; clip-path: polygon(var(--slant) 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%); }
+.fbtn:hover { background: #2C2C2C; }
+.fbtn[aria-pressed="true"] { background: var(--orange); color: var(--orange-ink); }
+.fbtn:focus-visible, .go:focus-visible, .near:focus-visible { outline: none; background: #FFFFFF; color: #000000; }
+.fgroup { gap: 2px; }
+.fbtn .sq { width: 8px; height: 14px; background: var(--cat); transform: skewX(-18deg); }
+.fbtn[aria-pressed="true"] .sq { outline: 2px solid var(--orange-ink); }
+.fbtn .n { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 500; }
+.fbtn[aria-pressed="true"] .n { color: var(--orange-ink); }
+.flabel { font-size: 13px; color: var(--muted); margin-right: 4px; align-self: center; }
+
+/* Cuerpo */
+.body { min-height: 0; display: grid; grid-template-columns: minmax(360px, 440px) 1fr; }
+.listpane { min-height: 0; overflow-y: auto; border-right: 1px solid var(--line); }
+.count { position: sticky; top: 0; z-index: 2; margin: 0; padding: 12px 20px; background: var(--black); border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.count strong { color: var(--ink); font: 800 18px/1 var(--font-display); font-variant-numeric: tabular-nums; margin-right: 2px; }
+.list { list-style: none; margin: 0; padding: 0; }
+.row { position: relative; display: grid; grid-template-columns: 4px 1fr; border-bottom: 1px solid var(--line); }
+.row::before { content: ""; background: var(--cat); opacity: .9; }
+.row[aria-current="true"] { background: var(--s1); }
+.row[aria-current="true"]::before { background: var(--orange); opacity: 1; }
+.rowin { padding: 14px 20px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.pick { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 2px; border-radius: var(--r); }
+.pick:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+.name { font: 800 25px/1 var(--font-display); letter-spacing: 0.005em; text-wrap: balance; }
+.pick:hover .name { color: var(--orange); }
+.meta { font-size: 13px; color: var(--muted); }
+.meta .kind { color: var(--cat); font-weight: 600; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px 3px; font-size: 12.5px; font-weight: 700; background: var(--s2); color: var(--ink); box-shadow: inset 3px 0 0 var(--orange); }
+.tag svg { width: 14px; height: 14px; color: var(--orange); }
+.tag.none { background: transparent; box-shadow: none; border: 2px dashed var(--line); color: var(--muted); font-weight: 600; }
+.tag.src { background: transparent; box-shadow: none; color: var(--muted); font-weight: 400; padding-left: 0; }
+.acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.acts { gap: 4px !important; }
+.go { display: inline-flex; align-items: center; min-height: 40px; padding: 2px calc(var(--tip) + 14px) 0 14px; font-weight: 800; font-size: 14px; text-decoration: none; border: 0; color: var(--ink); background: var(--s2); clip-path: polygon(0 0, calc(100% - var(--tip)) 0, 100% 50%, calc(100% - var(--tip)) 100%, 0 100%); }
+.go:hover { background: #2C2C2C; color: var(--orange); }
+.go.main { background: var(--orange); color: var(--orange-ink); }
+.go.main:hover { background: #FF9447; color: var(--orange-ink); }
+.empty { padding: 32px 20px; color: var(--muted); }
+.empty button { margin-top: 12px; }
+.foot { padding: 20px; font-size: 12.5px; color: #8A8A8A; }
+.foot p { margin: 0 0 6px; max-width: 60ch; }
+
+/* Mapa */
+.mappane { position: relative; min-height: 0; }
+#map { position: absolute; inset: 0; }
+.leaflet-container { background: #0E0E0E; font-family: var(--font-body); }
+#map.no-tiles { background-image: linear-gradient(#1C1C1C 1px, transparent 1px), linear-gradient(90deg, #1C1C1C 1px, transparent 1px); background-size: 48px 48px; }
+.leaflet-bar { border: 0 !important; border-radius: 0 !important; }
+.leaflet-bar a { border-radius: 0 !important; }
+.leaflet-bar a { background: var(--s1); color: var(--ink); border-color: var(--line); }
+.leaflet-bar a:hover { background: var(--s2); color: var(--orange); }
+.leaflet-control-attribution { background: rgba(0,0,0,.75) !important; color: var(--muted); }
+.leaflet-control-attribution a { color: var(--orange); }
+.pin-wrap { background: none; border: 0; }
+.pin { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--cat); border: 2px solid #000; box-shadow: 0 0 0 1px rgba(255,255,255,.35); transition: transform .15s; }
+.pin span { transform: rotate(45deg); color: #000; font: 800 12px/1 var(--font-display); }
+.pin.on { transform: rotate(-45deg) scale(1.35); box-shadow: 0 0 0 3px var(--orange); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--s1); color: var(--ink); border-radius: 0; box-shadow: 0 -4px 0 var(--orange), 0 8px 24px rgba(0,0,0,.6); }
+.leaflet-popup-content { margin: 14px 16px; min-width: 260px; font-size: 14px; }
+.pop .acts { flex-wrap: nowrap; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.pop { display: flex; flex-direction: column; gap: 8px; }
+.pop .name { font-size: 17px; }
+.leaflet-container a.go { color: var(--ink); }
+.leaflet-container a.go.main { color: var(--orange-ink); }
+.ref-line { stroke: #555; stroke-width: 3; stroke-dasharray: 2 8; stroke-linecap: round; fill: none; }
+.ref-dot { stroke: #555; fill: #000; }
+.ref-tip { background: transparent; border: 0; box-shadow: none; color: #777; font: 600 11px var(--font-body); }
+.ref-tip::before { display: none; }
+
+.near { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px calc(var(--slant) + 12px) 0; background: var(--s2); border: 0; cursor: pointer; font-weight: 800; font-size: 14px; white-space: nowrap; clip-path: polygon(var(--slant) 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%); }
+.near:hover { background: #2C2C2C; color: var(--orange); }
+.near[aria-pressed="true"] { background: var(--orange); color: var(--orange-ink); }
+.locmsg { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--c-rapida); }
+.dist { color: var(--orange); font-weight: 700; font-variant-numeric: tabular-nums; }
+.me-dot { width: 16px; height: 16px; border-radius: 50%; background: #3DA5FF; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(61,165,255,.25); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 800; background: var(--s1); border: 0; border-top: 4px solid var(--orange); border-radius: 0; padding: 16px 16px 14px; box-shadow: 0 -4px 24px rgba(0,0,0,.6); max-height: 60%; overflow-y: auto; }
+.sheet .pop { gap: 10px; }
+.sheet .name { font-size: 28px; padding-right: 44px; }
+.sheet-x { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; display: grid; place-items: center; background: transparent; border: 0; color: var(--muted); cursor: pointer; border-radius: var(--r); }
+.sheet .acts .go { flex: 1 1 0; justify-content: center; }
+
+/* Barra inferior (solo celular) */
+.tabbar { display: none; }
+
+@media (max-width: 820px) {
+  .app { grid-template-rows: auto auto 1fr auto; }
+  .head { padding: 10px 16px; gap: 10px; padding-top: max(10px, env(safe-area-inset-top)); }
+  .brand { font-size: 24px; gap: 8px; }
+  .brand svg { width: 24px; height: 24px; }
+  .search { order: 3; flex-basis: 100%; max-width: none; }
+  .search input { font-size: 16px; height: 44px; }
+  .near { margin-left: auto; min-height: 42px; font-size: 13.5px; gap: 6px; }
+  .locmsg { order: 4; }
+  .fbtn { min-height: 44px; }
+  .go { min-height: 46px; font-size: 15px; }
+  .acts .go { flex: 1 1 0; justify-content: center; }
+  .name { font-size: 27px; }
+  .leaflet-control-zoom { display: none; }
+  .filters { padding: 10px 16px; gap: 8px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .fgroup { flex-wrap: nowrap; }
+  .fbtn { white-space: nowrap; }
+  .body { grid-template-columns: 1fr; }
+  .listpane { border-right: 0; }
+  .body[data-view="lista"] .mappane { display: none; }
+  .body[data-view="mapa"] .listpane { display: none; }
+  .count, .rowin { padding-left: 16px; padding-right: 16px; }
+  .tabbar { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+  .tabbar button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; border: 0; background: var(--black); color: var(--muted); font: 800 22px/1 var(--font-display); letter-spacing: 0.01em; cursor: pointer; }
+  .tabbar button[aria-pressed="true"] { color: var(--orange); box-shadow: inset 0 3px 0 var(--orange); }
+}
+@media (prefers-reduced-motion: reduce) { .pin { transition: none; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17 9 9h6l3.5 8"/><path d="M9 9l3 8h1"/><path d="M8 6h3"/><path d="M15 9l-1-3h2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-park" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></symbol>
+  <symbol id="i-pct" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></symbol>
+  <symbol id="i-lane" viewBox="0 0 24 24"><path d="M6 3 4 21"/><path d="M18 3l2 18"/><path d="M12 4v3M12 10.5v3M12 17v3"/></symbol>
+  <symbol id="i-loc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="head">
+    <h1 class="brand"><svg class="i" aria-hidden="true"><use href="#i-bike"/></svg><span>Bicifriendly</span></h1>
+    <label class="search" for="q">
+      <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+      <span class="sr" hidden>Buscar</span>
+      <input id="q" type="search" enterkeyhint="search" placeholder="Busca por nombre, calle o comuna" autocomplete="off" aria-label="Buscar por nombre, calle o comuna">
+    </label>
+    <button type="button" class="near" id="near" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-loc"/></svg><span>Cerca de mí</span></button>
+    <p class="locmsg" id="locmsg" role="status" hidden></p>
+  </header>
+
+  <div class="filters">
+    <div class="fgroup" id="types" role="group" aria-label="Tipo de local"></div>
+    <div class="fgroup" id="perks" role="group" aria-label="Datos ciclistas">
+      <span class="flabel">Para ciclistas</span>
+    </div>
+  </div>
+
+  <div class="body" id="body" data-view="lista">
+    <section class="listpane" aria-label="Lugares">
+      <p class="count" id="count" aria-live="polite"></p>
+      <ul class="list" id="list"></ul>
+      <div class="foot">
+        <p>Prototipo armado con datos de sitios web públicos (M360, El Desconcierto, Komoot, Trailforks, Pedalea, Chócale y otros), sin verificar en terreno. Cada dato indica su fuente y año: los más antiguos pueden haber cambiado.</p>
+        <p>Pines en posición aproximada. Los botones de navegación buscan por nombre y dirección.</p>
+      </div>
+    </section>
+    <section class="mappane" aria-label="Mapa">
+      <div id="map"></div>
+      <div class="sheet" id="sheet" hidden>
+        <button type="button" class="sheet-x" id="sheetX" aria-label="Cerrar ficha"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+        <div id="sheetBody"></div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabbar" aria-label="Vista">
+    <button type="button" id="tabLista" aria-pressed="true"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg>Lista</button>
+    <button type="button" id="tabMapa" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-map"/></svg>Mapa</button>
+  </nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function () {
+  var TYPES = [
+    { key: 'cafe', label: 'Café', plural: 'Cafés', glyph: 'C' },
+    { key: 'bar', label: 'Bar', plural: 'Bares', glyph: 'B' },
+    { key: 'rapida', label: 'Comida rápida', plural: 'Comida rápida', glyph: 'F' },
+    { key: 'restaurant', label: 'Restaurant', plural: 'Restaurantes', glyph: 'R' },
+    { key: 'punto', label: 'Punto ciclista', plural: 'Puntos ciclistas', glyph: 'P' }
+  ];
+  var PERKS = [
+    { key: 'bicis', label: 'Bicicletero', icon: 'i-park' },
+    { key: 'taller', label: 'Taller', icon: 'i-wrench' },
+    { key: 'descuento', label: 'Descuento', icon: 'i-pct' },
+    { key: 'ciclovia', label: 'Ciclovía cerca', icon: 'i-lane' },
+    { key: 'ruta', label: 'Parada de ruta', icon: 'i-bike' }
+  ];
+  // Datos ciclistas: taller (bool), descuento (texto), ciclovia (nombre), fuente.
+  var PLACES = [
+    { id: 'holley', name: 'Café Holley', type: 'cafe', address: 'General Holley 50', comuna: 'Providencia', lat: -33.4219, lng: -70.6038 },
+    { id: 'draga', name: 'Draga Coffee', type: 'cafe', address: 'Huelén 71', comuna: 'Providencia', lat: -33.4370, lng: -70.6372 },
+    { id: 'felix', name: 'Félix Café', type: 'cafe', address: 'Coyancura 223, local 2', comuna: 'Providencia', lat: -33.4248, lng: -70.6090, ruta: 'Recomendado por ciclistas de ruta', src: 'Komoot' },
+    { id: 'lasubida', name: 'Café La Subida', type: 'cafe', address: 'Sector Cerro San Cristóbal (ubicación por confirmar)', comuna: 'Providencia', lat: -33.4205, lng: -70.6155, ruta: '13 de 15 ciclistas de ruta lo recomiendan', src: 'Komoot' },
+    { id: 'goodfriends', name: 'The Good Friends, Bike & Coffee', type: 'cafe', address: 'Cerro La Parva 998, local 9', comuna: 'Las Condes', lat: -33.4042, lng: -70.5745, taller: true, ruta: 'Punto de partida de salidas guiadas', src: 'Trailforks' },
+    { id: 'singular', name: 'Singular Coffee × All4Bikers', type: 'cafe', address: 'Av. Las Condes, a la altura de San Damián (número por confirmar)', comuna: 'Las Condes', lat: -33.3868, lng: -70.5318, ruta: 'Camino a Farellones y Lo Barnechea', src: 'Pedalea 2024' },
+    { id: 'tebicite', name: 'Tebicité', type: 'cafe', address: 'Dr. Johow 411', comuna: 'Ñuñoa', lat: -33.4512, lng: -70.5992, taller: true, extra: 'Revisión de bici gratis', src: 'Radio U. de Chile 2016' },
+    { id: 'soulbikes', name: 'Soulbikes Café', type: 'cafe', address: 'Linderos (dirección por confirmar)', comuna: 'Buin', lat: -33.7385, lng: -70.7135, ruta: 'Destino de rutas desde Linderos', src: 'Komoot' },
+    { id: 'sucucho', name: 'Sucucho Bike', type: 'cafe', address: 'Rancagua 188', comuna: 'Providencia', lat: -33.4446, lng: -70.6292, taller: true, ciclovia: 'Parque Bustamante', src: 'M360 2016' },
+    { id: 'litbust', name: 'Café Literario Bustamante', type: 'cafe', address: 'Parque Bustamante, entre Baquedano y Rancagua', comuna: 'Providencia', lat: -33.4412, lng: -70.6322, ciclovia: 'Parque Bustamante', src: 'M360 2016' },
+    { id: 'litbalm', name: 'Café Literario Balmaceda', type: 'cafe', address: 'Parque Balmaceda, a la altura de Condell', comuna: 'Providencia', lat: -33.4320, lng: -70.6262, ciclovia: 'Parque Balmaceda', src: 'M360 2016' },
+    { id: 'labici', name: 'Café la Bicicleta', type: 'cafe', address: 'Av. Pocuro 3091', comuna: 'Providencia', lat: -33.4302, lng: -70.5996, taller: true, ciclovia: 'Pocuro', src: 'M360 2016' },
+    { id: 'liguria', name: 'Liguria', type: 'bar', address: 'Av. Providencia 1373', comuna: 'Providencia', lat: -33.4286, lng: -70.6178 },
+    { id: 'barconst', name: 'Bar Constitución', type: 'bar', address: 'Constitución 61', comuna: 'Providencia', lat: -33.4348, lng: -70.6342 },
+    { id: 'baco', name: 'Baco', type: 'bar', address: 'Nueva de Lyon 113', comuna: 'Providencia', lat: -33.4228, lng: -70.6070 },
+    { id: 'roberta', name: 'Bar Roberta', type: 'bar', address: 'Av. Condell 1315', comuna: 'Providencia', lat: -33.4472, lng: -70.6214, ciclovia: 'Marín', src: 'M360 2016' },
+    { id: 'caramagnola', name: 'Caramagnola Bike & Beer', type: 'bar', address: 'Av. Francisco Bilbao 4471', comuna: 'La Reina', lat: -33.4335, lng: -70.5772, descuento: '10%', ciclovia: 'Canal San Carlos', bicis: 'Estacionamiento para bicis', src: 'M360 2016 y El Desconcierto 2015' },
+    { id: 'alemana', name: 'Fuente Alemana', type: 'rapida', address: 'Av. Pedro de Valdivia 210', comuna: 'Providencia', lat: -33.4272, lng: -70.6112 },
+    { id: 'fletch', name: 'Uncle Fletch', type: 'rapida', address: 'Constitución 92', comuna: 'Providencia', lat: -33.4352, lng: -70.6326 },
+    { id: 'peumayen', name: 'Peumayén Ancestral Food', type: 'restaurant', address: 'Constitución 136', comuna: 'Providencia', lat: -33.4355, lng: -70.6316 },
+    { id: 'rivoli', name: 'Rivoli', type: 'restaurant', address: 'Guardia Vieja 47', comuna: 'Providencia', lat: -33.4258, lng: -70.6128 },
+    { id: 'danoi', name: 'Da Noi', type: 'restaurant', address: 'Av. Italia 1791', comuna: 'Ñuñoa', lat: -33.4521, lng: -70.6204, ciclovia: 'Marín', src: 'M360 2016' },
+    { id: 'elcamino', name: 'El Camino', type: 'restaurant', address: 'Av. Italia 1034', comuna: 'Providencia', lat: -33.4431, lng: -70.6249, ciclovia: 'Marín', src: 'M360 2016' },
+    { id: 'niguiri', name: 'Niguiri Sushi', type: 'restaurant', address: 'Av. La Dehesa 1201', comuna: 'Lo Barnechea', lat: -33.3592, lng: -70.5182, descuento: '15%', src: 'M360 2016' },
+    { id: 'mut', name: 'MUT · Mercado Urbano Tobalaba', type: 'punto', address: 'Av. Apoquindo con Tobalaba', comuna: 'Las Condes', lat: -33.4172, lng: -70.6012, bicis: 'Más de 2.000 estacionamientos', taller: true, extra: 'Decathlon Bike Lab, metro Tobalaba', src: 'Chócale 2026' },
+    { id: 'parador', name: 'Parador del Ciclista', type: 'punto', address: 'Camino a Farellones (G-21), antes de Corral Quemado', comuna: 'Lo Barnechea', lat: -33.3528532934991, lng: -70.36875222789324, exact: true, ruta: 'Parada clásica camino a Farellones', extra: 'Meta de 16 km del Desafío Subaru', src: 'Ridechile 2024–2025' },
+    { id: 'bikecostanera', name: 'Bike Costanera', type: 'punto', address: 'Av. Andrés Bello 2425, acceso lateral', comuna: 'Providencia', lat: -33.4170, lng: -70.6070, bicis: 'Más de 800 estacionamientos', extra: 'Duchas, lockers y herramientas', src: 'Chócale 2024–2025' },
+    { id: 'ajiamarillo', name: 'Ají Amarillo', type: 'restaurant', address: 'Antonio Varas 117', comuna: 'Providencia', lat: -33.4280, lng: -70.6168, descuento: '10%', ciclovia: 'Antonio Varas', src: 'M360 2016' }
+  ];
+  var METRO = [
+    { n: 'Baquedano', lat: -33.4372, lng: -70.6342 }, { n: 'Salvador', lat: -33.4325, lng: -70.6256 },
+    { n: 'Manuel Montt', lat: -33.4288, lng: -70.6166 }, { n: 'Pedro de Valdivia', lat: -33.4260, lng: -70.6111 },
+    { n: 'Los Leones', lat: -33.4222, lng: -70.6040 }, { n: 'Tobalaba', lat: -33.4175, lng: -70.5983 }
+  ];
+
+  var state = { type: 'all', q: '', perks: {}, sel: null, view: 'lista', me: null };
+  var typeBy = {}; TYPES.forEach(function (t) { typeBy[t.key] = t; });
+  var byId = {}; PLACES.forEach(function (p) { byId[p.id] = p; });
+  var reduce = false; try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  var isApple = false;
+  try { isApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent); } catch (e) {}
+  var mobileMQ = null; try { mobileMQ = matchMedia('(max-width: 820px)'); } catch (e) {}
+  function isMobile() { return !!(mobileMQ && mobileMQ.matches); }
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function ico(id) { return '<svg class="i" aria-hidden="true"><use href="#' + id + '"/></svg>'; }
+  function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function query(p) { return encodeURIComponent(p.name + ', ' + p.address + ', ' + p.comuna + ', Chile'); }
+  // Con coordenadas confirmadas (exact) se navega al punto exacto; si no, se busca por nombre y dirección.
+  function gUrl(p) { return 'https://www.google.com/maps/search/?api=1&query=' + (p.exact ? p.lat + ',' + p.lng : query(p)); }
+  function aUrl(p) { return p.exact ? 'https://maps.apple.com/?ll=' + p.lat + ',' + p.lng + '&q=' + encodeURIComponent(p.name) : 'https://maps.apple.com/?q=' + query(p); }
+
+  function has(p, k) { return !!p[k]; }
+  function km(p) {
+    if (!state.me) return null;
+    var R = 6371, toR = Math.PI / 180;
+    var dLat = (p.lat - state.me.lat) * toR, dLng = (p.lng - state.me.lng) * toR;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(state.me.lat * toR) * Math.cos(p.lat * toR) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+  function distTxt(p) {
+    var d = km(p); if (d === null) return '';
+    return '<span class="dist">' + (d < 1 ? Math.round(d * 1000) + ' m' : d.toFixed(1).replace('.', ',') + ' km') + '</span> · ';
+  }
+  function visible() {
+    var q = norm(state.q.trim());
+    var out = PLACES.filter(function (p) {
+      if (state.type !== 'all' && p.type !== state.type) return false;
+      for (var k in state.perks) if (state.perks[k] && !has(p, k)) return false;
+      if (q && norm(p.name + ' ' + p.address + ' ' + p.comuna).indexOf(q) === -1) return false;
+      return true;
+    });
+    if (state.me) out.sort(function (a, b) { return km(a) - km(b); });
+    return out;
+  }
+
+  function tagsHtml(p) {
+    var t = [];
+    if (p.bicis) t.push('<span class="tag">' + ico('i-park') + esc(p.bicis) + '</span>');
+    if (p.taller) t.push('<span class="tag">' + ico('i-wrench') + 'Taller mecánico</span>');
+    if (p.descuento) t.push('<span class="tag">' + ico('i-pct') + esc(p.descuento) + ' a ciclistas</span>');
+    if (p.ciclovia) t.push('<span class="tag">' + ico('i-lane') + 'Ciclovía ' + esc(p.ciclovia) + '</span>');
+    if (p.ruta) t.push('<span class="tag">' + ico('i-bike') + esc(p.ruta) + '</span>');
+    if (p.extra) t.push('<span class="tag">' + esc(p.extra) + '</span>');
+    if (!t.length) return '<div class="tags"><span class="tag none">Sin datos ciclistas todavía</span></div>';
+    if (p.src) t.push('<span class="tag src">Fuente: ' + esc(p.src) + ', por verificar</span>');
+    return '<div class="tags">' + t.join('') + '</div>';
+  }
+  function linksHtml(p) {
+    var g = '<a class="go' + (isApple ? '' : ' main') + '" href="' + gUrl(p) + '" target="_blank" rel="noopener">Google Maps</a>';
+    var a = '<a class="go' + (isApple ? ' main' : '') + '" href="' + aUrl(p) + '" target="_blank" rel="noopener">Mapas</a>';
+    return '<div class="acts">' + (isApple ? a + g : g + a) + '</div>';
+  }
+
+  function renderFilters() {
+    var html = '<button type="button" class="fbtn" data-type="all" aria-pressed="' + (state.type === 'all') + '">Todos <span class="n">' + PLACES.length + '</span></button>';
+    TYPES.forEach(function (t) {
+      var n = PLACES.filter(function (p) { return p.type === t.key; }).length;
+      html += '<button type="button" class="fbtn t-' + t.key + '" data-type="' + t.key + '" aria-pressed="' + (state.type === t.key) + '"><span class="sq" aria-hidden="true"></span>' + t.plural + ' <span class="n">' + n + '</span></button>';
+    });
+    document.getElementById('types').innerHTML = html;
+    var ph = '<span class="flabel">Para ciclistas</span>';
+    PERKS.forEach(function (k) {
+      ph += '<button type="button" class="fbtn" data-perk="' + k.key + '" aria-pressed="' + !!state.perks[k.key] + '">' + ico(k.icon) + k.label + '</button>';
+    });
+    document.getElementById('perks').innerHTML = ph;
+  }
+
+  function renderList() {
+    var list = visible();
+    var n = list.length;
+    document.getElementById('count').innerHTML = '<strong>' + n + '</strong> ' + (n === 1 ? 'lugar' : 'lugares');
+    var el = document.getElementById('list');
+    if (!n) {
+      el.innerHTML = '<li class="empty">Ningún lugar cumple estos filtros. Prueba con menos filtros o con otra búsqueda.<br><button type="button" class="fbtn" id="reset">Limpiar filtros</button></li>';
+      return;
+    }
+    el.innerHTML = list.map(function (p) {
+      var t = typeBy[p.type];
+      return '<li class="row t-' + p.type + '" id="row-' + p.id + '" aria-current="' + (state.sel === p.id) + '"><div class="rowin">' +
+        '<button type="button" class="pick" data-pick="' + p.id + '"><span class="name">' + esc(p.name) + '</span>' +
+        '<span class="meta">' + distTxt(p) + '<span class="kind">' + t.label + '</span>, ' + esc(p.address) + ', ' + esc(p.comuna) + '</span></button>' +
+        tagsHtml(p) + linksHtml(p) + '</div></li>';
+    }).join('');
+  }
+
+  // Mapa
+  var map, layer, markers = {}, tilesOk = false;
+  function initMap() {
+    map = L.map('map', { zoomControl: true, scrollWheelZoom: true });
+    var ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
+    var base = L.tileLayer(ESRI + 'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16, attribution: 'Mapa &copy; Esri, HERE, Garmin, &copy; colaboradores de OpenStreetMap'
+    }).addTo(map);
+    L.tileLayer(ESRI + 'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 }).addTo(map);
+    var errs = 0;
+    base.on('tileload', function () { tilesOk = true; });
+    base.on('tileerror', function () { if (!tilesOk && ++errs >= 3) fallback(); });
+    map.attributionControl.setPrefix(false);
+    layer = L.layerGroup().addTo(map);
+    syncMarkers(true);
+  }
+  function fallback() {
+    var m = document.getElementById('map');
+    if (m.classList.contains('no-tiles')) return;
+    m.classList.add('no-tiles');
+    L.polyline(METRO.map(function (s) { return [s.lat, s.lng]; }), { className: 'ref-line', interactive: false }).addTo(map);
+    METRO.forEach(function (s) {
+      L.circleMarker([s.lat, s.lng], { radius: 4, weight: 2, className: 'ref-dot', interactive: false })
+        .bindTooltip('Metro ' + s.n, { permanent: true, direction: 'bottom', offset: [0, 4], className: 'ref-tip' }).addTo(map);
+    });
+  }
+  function popupHtml(p) {
+    var t = typeBy[p.type];
+    return '<div class="pop t-' + p.type + '"><span class="name">' + esc(p.name) + '</span>' +
+      '<span class="meta">' + distTxt(p) + '<span class="kind">' + t.label + '</span>, ' + esc(p.address) + ', ' + esc(p.comuna) + '</span>' + tagsHtml(p) + linksHtml(p) + '</div>';
+  }
+  function syncMarkers(fit) {
+    if (!map) return;
+    layer.clearLayers(); markers = {};
+    var pts = [];
+    visible().forEach(function (p) {
+      var t = typeBy[p.type];
+      var icon = L.divIcon({ className: 'pin-wrap', iconSize: [30, 30], iconAnchor: [4, 32], popupAnchor: [11, -30],
+        html: '<div class="pin t-' + p.type + (state.sel === p.id ? ' on' : '') + '"><span>' + t.glyph + '</span></div>' });
+      var m = L.marker([p.lat, p.lng], { icon: icon, title: p.name, riseOnHover: true });
+      m.on('click', function () { select(p.id, 'map'); openInfo(p); });
+      m.addTo(layer); markers[p.id] = m; pts.push([p.lat, p.lng]);
+    });
+    if (meMarker) meMarker.addTo(map);
+    if (fit && pts.length) {
+      if (state.me) pts.push([state.me.lat, state.me.lng]);
+      if (document.getElementById('map').offsetWidth > 0) { map.fitBounds(pts, { padding: [40, 40], maxZoom: 15 }); pendingFit = null; }
+      else pendingFit = pts;
+    }
+  }
+  var meMarker = null, pendingFit = null;
+  function openInfo(p) {
+    if (isMobile()) {
+      map.closePopup();
+      document.getElementById('sheetBody').innerHTML = popupHtml(p);
+      document.getElementById('sheet').hidden = false;
+    } else {
+      closeSheet();
+      L.popup({ maxWidth: 300, offset: [11, -30] }).setLatLng([p.lat, p.lng]).setContent(popupHtml(p)).openOn(map);
+    }
+  }
+  function closeSheet() { document.getElementById('sheet').hidden = true; }
+
+  function highlight(id) {
+    Object.keys(markers).forEach(function (k) {
+      var el = markers[k].getElement(); if (!el) return;
+      var pin = el.querySelector('.pin'); if (pin) pin.classList.toggle('on', k === id);
+      markers[k].setZIndexOffset(k === id ? 1000 : 0);
+    });
+  }
+  function select(id, from) {
+    state.sel = id;
+    document.querySelectorAll('.row').forEach(function (r) { r.setAttribute('aria-current', String(r.id === 'row-' + id)); });
+    highlight(id);
+    if (from === 'map') {
+      var row = document.getElementById('row-' + id);
+      if (row && !isMobile()) row.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+      return;
+    }
+    if (isMobile()) setView('mapa');
+    var p = byId[id], m = markers[id];
+    if (!p || !m) return;
+    var z = Math.max(map.getZoom(), 15);
+    if (isMobile()) {
+      map.setView([p.lat, p.lng], z, { animate: false });
+      openInfo(p);
+      map.panBy([0, document.getElementById('sheet').offsetHeight / 2], { animate: false });
+      highlight(id);
+      return;
+    }
+    if (reduce) map.setView([p.lat, p.lng], z); else map.flyTo([p.lat, p.lng], z, { duration: 0.6 });
+    openInfo(p);
+  }
+
+  function setView(v) {
+    state.view = v;
+    document.getElementById('body').setAttribute('data-view', v);
+    document.getElementById('tabLista').setAttribute('aria-pressed', String(v === 'lista'));
+    document.getElementById('tabMapa').setAttribute('aria-pressed', String(v === 'mapa'));
+    if (v === 'mapa' && map) {
+      map.invalidateSize();
+      if (pendingFit) { map.fitBounds(pendingFit, { padding: [40, 40], maxZoom: 15 }); pendingFit = null; }
+    }
+    if (v === 'lista') closeSheet();
+  }
+
+  function refresh() { renderFilters(); renderList(); syncMarkers(true); }
+
+  document.querySelector('.filters').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.type) state.type = b.dataset.type;
+    if (b.dataset.perk) state.perks[b.dataset.perk] = !state.perks[b.dataset.perk];
+    refresh();
+  });
+  document.getElementById('list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pick]'); if (b) { select(b.dataset.pick, 'list'); return; }
+    if (e.target.id === 'reset') { state.type = 'all'; state.perks = {}; state.q = ''; document.getElementById('q').value = ''; refresh(); }
+  });
+  var qt;
+  document.getElementById('q').addEventListener('input', function (e) {
+    state.q = e.target.value; clearTimeout(qt);
+    qt = setTimeout(function () { renderList(); syncMarkers(true); }, 120);
+  });
+  document.getElementById('sheetX').addEventListener('click', closeSheet);
+  document.getElementById('near').addEventListener('click', function () {
+    var btn = this, msg = document.getElementById('locmsg');
+    function fail(text) { msg.textContent = text; msg.hidden = false; btn.setAttribute('aria-pressed', 'false'); btn.querySelector('span').textContent = 'Cerca de mí'; }
+    if (state.me) {
+      state.me = null; if (meMarker) { map.removeLayer(meMarker); meMarker = null; }
+      btn.setAttribute('aria-pressed', 'false'); msg.hidden = true; refresh(); return;
+    }
+    if (!navigator.geolocation) { fail('Este navegador no permite ver tu ubicación.'); return; }
+    btn.querySelector('span').textContent = 'Buscando…';
+    try {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        state.me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        btn.setAttribute('aria-pressed', 'true'); btn.querySelector('span').textContent = 'Cerca de mí';
+        msg.hidden = true;
+        if (map) {
+          if (meMarker) map.removeLayer(meMarker);
+          meMarker = L.marker([state.me.lat, state.me.lng], { interactive: false, keyboard: false,
+            icon: L.divIcon({ className: 'pin-wrap', html: '<div class="me-dot"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }) });
+        }
+        refresh();
+      }, function () {
+        fail('No pudimos ver tu ubicación. Permite el acceso a la ubicación en tu navegador e inténtalo de nuevo.');
+      }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    } catch (e) { fail('No pudimos ver tu ubicación en esta vista. Funciona al abrir la página en tu navegador.'); }
+  });
+  document.getElementById('tabLista').addEventListener('click', function () { setView('lista'); });
+  document.getElementById('tabMapa').addEventListener('click', function () { setView('mapa'); });
+  if (mobileMQ && mobileMQ.addEventListener) mobileMQ.addEventListener('change', function () { if (map) setTimeout(function () { map.invalidateSize(); }, 0); });
+
+  renderFilters();
+  renderList();
+  if (window.L) initMap();
+})();
+</script>
+</body>
+</html>
