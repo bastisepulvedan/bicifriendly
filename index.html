@@ -813,6 +813,18 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
 .sheet-x { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; display: grid; place-items: center; background: transparent; border: 0; color: var(--muted); cursor: pointer; border-radius: var(--r); }
 .sheet .acts .go { flex: 1 1 0; justify-content: center; }
 
+.suggest { text-decoration: none; color: var(--orange-ink) !important; background: var(--orange) !important; }
+.suggest:hover { background: #FF9447 !important; }
+.rate { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; color: var(--muted); }
+.stars { position: relative; display: inline-block; font-size: 15px; line-height: 1; letter-spacing: 2px; color: #3A3A3A; }
+.stars::before { content: "★★★★★"; }
+.stars i { position: absolute; left: 0; top: 0; overflow: hidden; white-space: nowrap; color: var(--orange); font-style: normal; }
+.stars i::before { content: "★★★★★"; }
+.rate b { color: var(--ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.rate-link { color: var(--orange); font-weight: 700; text-decoration: none; padding: 6px 0; }
+.rate-link:hover { text-decoration: underline; }
+.foot a { color: var(--orange); font-weight: 700; }
+
 /* Barra inferior (solo celular) */
 .tabbar { display: none; }
 
@@ -839,8 +851,11 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
   .body[data-view="lista"] .mappane { display: none; }
   .body[data-view="mapa"] .listpane { display: none; }
   .count, .rowin { padding-left: 16px; padding-right: 16px; }
-  .tabbar { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+  .tabbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 1px; background: var(--line); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
   .tabbar button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; border: 0; background: var(--black); color: var(--muted); font: 800 22px/1 var(--font-display); letter-spacing: 0.01em; cursor: pointer; }
+  .head .suggest { display: none !important; }
+  .tabbar .tabsug { display: flex; align-items: center; justify-content: center; min-height: 56px; background: var(--orange); color: var(--orange-ink); font: 800 22px/1 var(--font-display); text-decoration: none; }
+  .tabbar .tabsug[hidden] { display: none; }
   .tabbar button[aria-pressed="true"] { color: var(--orange); box-shadow: inset 0 3px 0 var(--orange); }
 }
 @media (prefers-reduced-motion: reduce) { .pin { transition: none; } }
@@ -869,6 +884,7 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
       <input id="q" type="search" enterkeyhint="search" placeholder="Busca por nombre, calle o comuna" autocomplete="off" aria-label="Buscar por nombre, calle o comuna">
     </label>
     <button type="button" class="near" id="near" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-loc"/></svg><span>Cerca de mí</span></button>
+    <a class="near suggest" id="suggestBtn" href="#" target="_blank" rel="noopener" hidden>+ Sugerir lugar</a>
     <p class="locmsg" id="locmsg" role="status" hidden></p>
   </header>
 
@@ -886,6 +902,7 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
       <div class="foot">
         <p>Prototipo armado con datos de sitios web públicos (M360, El Desconcierto, Komoot, Trailforks, Pedalea, Chócale y otros), sin verificar en terreno. Cada dato indica su fuente y año: los más antiguos pueden haber cambiado.</p>
         <p>Pines en posición aproximada. Los botones de navegación buscan por nombre y dirección.</p>
+        <p id="footSuggest" hidden>¿Conoces un lugar que reciba bien a los ciclistas? <a href="#" target="_blank" rel="noopener">Sugiérelo aquí</a>. Revisamos cada aporte antes de publicarlo.</p>
       </div>
     </section>
     <section class="mappane" aria-label="Mapa">
@@ -900,12 +917,21 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
   <nav class="tabbar" aria-label="Vista">
     <button type="button" id="tabLista" aria-pressed="true"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg>Lista</button>
     <button type="button" id="tabMapa" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-map"/></svg>Mapa</button>
+    <a id="tabSug" class="tabsug" href="#" target="_blank" rel="noopener" hidden>+ Sugerir</a>
   </nav>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (function () {
+  // ---- Configuración: links que entrega la hoja "Config" de la planilla ----
+  var CONFIG = {
+    sugerirUrl: '',      // Formulario "Sugiere un lugar"
+    valorarUrl: '',      // Base del formulario "Valora un lugar" (termina en "entry.XXXX=")
+    resumenCsvUrl: ''    // Hoja "Resumen" publicada en la web como CSV
+  };
+  var RATINGS = {};
+
   var TYPES = [
     { key: 'cafe', label: 'Café', plural: 'Cafés', glyph: 'C' },
     { key: 'bar', label: 'Bar', plural: 'Bares', glyph: 'B' },
@@ -1010,6 +1036,53 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
     if (p.src) t.push('<span class="tag src">Fuente: ' + esc(p.src) + ', por verificar</span>');
     return '<div class="tags">' + t.join('') + '</div>';
   }
+  function ratingHtml(p) {
+    var r = RATINGS[p.id], html = '';
+    if (r && r.n > 0) {
+      var pct = Math.max(0, Math.min(100, r.avg / 5 * 100));
+      html += '<span class="stars" role="img" aria-label="' + r.avg.toFixed(1).replace('.', ',') + ' de 5 estrellas"><i style="width:' + pct + '%"></i></span>' +
+        '<b>' + r.avg.toFixed(1).replace('.', ',') + '</b><span>' + r.n + (r.n === 1 ? ' valoración' : ' valoraciones') + '</span>';
+    } else if (CONFIG.valorarUrl || CONFIG.resumenCsvUrl) {
+      html += '<span>Sin valoraciones todavía</span>';
+    }
+    if (CONFIG.valorarUrl) {
+      html += '<a class="rate-link" href="' + CONFIG.valorarUrl + encodeURIComponent(p.name + ' (' + p.id + ')') + '" target="_blank" rel="noopener">★ Valorar</a>';
+    }
+    return html ? '<div class="rate">' + html + '</div>' : '';
+  }
+  function parseCsv(text) {
+    var rows = [], row = [], cell = '', q = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (q) {
+        if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+        else if (ch === '"') q = false;
+        else cell += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === ',') { row.push(cell); cell = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell); rows.push(row); row = []; cell = '';
+      } else cell += ch;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function loadRatings() {
+    if (!CONFIG.resumenCsvUrl || !window.fetch) return;
+    fetch(CONFIG.resumenCsvUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (txt) {
+      var rows = parseCsv(txt || ''), out = {};
+      for (var i = 1; i < rows.length; i++) {
+        var id = (rows[i][0] || '').trim();
+        var avg = parseFloat(String(rows[i][1] || '').replace(',', '.'));
+        var n = parseInt(rows[i][2], 10);
+        if (id && !isNaN(avg) && n > 0) out[id] = { avg: avg, n: n };
+      }
+      RATINGS = out;
+      renderList();
+    }).catch(function () {});
+  }
+
   function linksHtml(p) {
     var g = '<a class="go' + (isApple ? '' : ' main') + '" href="' + gUrl(p) + '" target="_blank" rel="noopener">Google Maps</a>';
     var a = '<a class="go' + (isApple ? ' main' : '') + '" href="' + aUrl(p) + '" target="_blank" rel="noopener">Mapas</a>';
@@ -1036,7 +1109,9 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
     document.getElementById('count').innerHTML = '<strong>' + n + '</strong> ' + (n === 1 ? 'lugar' : 'lugares');
     var el = document.getElementById('list');
     if (!n) {
-      el.innerHTML = '<li class="empty">Ningún lugar cumple estos filtros. Prueba con menos filtros o con otra búsqueda.<br><button type="button" class="fbtn" id="reset">Limpiar filtros</button></li>';
+      el.innerHTML = '<li class="empty">Ningún lugar cumple estos filtros. Prueba con menos filtros o con otra búsqueda.' +
+        (CONFIG.sugerirUrl ? ' Si conoces uno, <a class="rate-link" href="' + CONFIG.sugerirUrl + '" target="_blank" rel="noopener">sugiérelo</a>.' : '') +
+        '<br><button type="button" class="fbtn" id="reset">Limpiar filtros</button></li>';
       return;
     }
     el.innerHTML = list.map(function (p) {
@@ -1044,7 +1119,7 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
       return '<li class="row t-' + p.type + '" id="row-' + p.id + '" aria-current="' + (state.sel === p.id) + '"><div class="rowin">' +
         '<button type="button" class="pick" data-pick="' + p.id + '"><span class="name">' + esc(p.name) + '</span>' +
         '<span class="meta">' + distTxt(p) + '<span class="kind">' + t.label + '</span>, ' + esc(p.address) + ', ' + esc(p.comuna) + '</span></button>' +
-        tagsHtml(p) + linksHtml(p) + '</div></li>';
+        ratingHtml(p) + tagsHtml(p) + linksHtml(p) + '</div></li>';
     }).join('');
   }
 
@@ -1077,7 +1152,7 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
   function popupHtml(p) {
     var t = typeBy[p.type];
     return '<div class="pop t-' + p.type + '"><span class="name">' + esc(p.name) + '</span>' +
-      '<span class="meta">' + distTxt(p) + '<span class="kind">' + t.label + '</span>, ' + esc(p.address) + ', ' + esc(p.comuna) + '</span>' + tagsHtml(p) + linksHtml(p) + '</div>';
+      '<span class="meta">' + distTxt(p) + '<span class="kind">' + t.label + '</span>, ' + esc(p.address) + ', ' + esc(p.comuna) + '</span>' + ratingHtml(p) + tagsHtml(p) + linksHtml(p) + '</div>';
   }
   function syncMarkers(fit) {
     if (!map) return;
@@ -1201,9 +1276,15 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
   document.getElementById('tabMapa').addEventListener('click', function () { setView('mapa'); });
   if (mobileMQ && mobileMQ.addEventListener) mobileMQ.addEventListener('change', function () { if (map) setTimeout(function () { map.invalidateSize(); }, 0); });
 
+  if (CONFIG.sugerirUrl) {
+    var sb = document.getElementById('suggestBtn'); sb.href = CONFIG.sugerirUrl; sb.hidden = false;
+    var ts = document.getElementById('tabSug'); ts.href = CONFIG.sugerirUrl; ts.hidden = false;
+    var fs = document.getElementById('footSuggest'); fs.querySelector('a').href = CONFIG.sugerirUrl; fs.hidden = false;
+  }
   renderFilters();
   renderList();
   if (window.L) initMap();
+  loadRatings();
 })();
 </script>
 </body>
