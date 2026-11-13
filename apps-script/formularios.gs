@@ -180,3 +180,100 @@ function idEntradaLugar_(form, item, valor) {
   const m = url.match(/entry\.(\d+)=/);
   return m ? m[1] : '';
 }
+
+
+/* =====================================================================
+ * ARREGLOS (ejecutar una vez): función "arreglarPlanilla"
+ *  - Corrige latitud/longitud de los lugares iniciales (la planilla en español
+ *    leyó el punto decimal como separador de miles).
+ *  - Reemplaza la fórmula de la hoja Resumen por valores que calcula este script,
+ *    así no depende de la configuración regional.
+ *  - Recalcula el Resumen cada vez que llega una valoración y cuando editas la planilla.
+ * ===================================================================== */
+
+const COORDS_INICIALES = {
+    holley: [-33.4219, -70.6038],
+    draga: [-33.437, -70.6372],
+    felix: [-33.4248, -70.609],
+    lasubida: [-33.4205, -70.6155],
+    goodfriends: [-33.4042, -70.5745],
+    singular: [-33.3868, -70.5318],
+    tebicite: [-33.4512, -70.5992],
+    soulbikes: [-33.7385, -70.7135],
+    sucucho: [-33.4446, -70.6292],
+    litbust: [-33.4412, -70.6322],
+    litbalm: [-33.432, -70.6262],
+    labici: [-33.4302, -70.5996],
+    liguria: [-33.4286, -70.6178],
+    barconst: [-33.4348, -70.6342],
+    baco: [-33.4228, -70.607],
+    roberta: [-33.4472, -70.6214],
+    caramagnola: [-33.4335, -70.5772],
+    alemana: [-33.4272, -70.6112],
+    fletch: [-33.4352, -70.6326],
+    peumayen: [-33.4355, -70.6316],
+    rivoli: [-33.4258, -70.6128],
+    danoi: [-33.4521, -70.6204],
+    elcamino: [-33.4431, -70.6249],
+    niguiri: [-33.3592, -70.5182],
+    mut: [-33.4172, -70.6012],
+    parador: [-33.3528532934991, -70.36875222789324],
+    bikecostanera: [-33.417, -70.607],
+    ajiamarillo: [-33.428, -70.6168]
+};
+
+function arreglarPlanilla() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const hoja = ss.getSheetByName('Lugares');
+  const n = hoja.getLastRow() - 1;
+  if (n > 0) {
+    const ids = hoja.getRange(2, 1, n, 1).getValues();
+    const rango = hoja.getRange(2, 6, n, 2);
+    const actuales = rango.getValues();
+    const nuevos = ids.map(function (f, i) {
+      const c = COORDS_INICIALES[String(f[0]).trim()];
+      return c ? c : actuales[i];
+    });
+    rango.setValues(nuevos);
+    rango.setNumberFormat('0.000000');
+  }
+
+  actualizarResumen();
+
+  // Triggers: al recibir una valoración y al editar la planilla (p. ej. marcar "Oculto").
+  const props = PropertiesService.getScriptProperties();
+  const fvId = props.getProperty('FORM_VALORAR_ID');
+  const existentes = ScriptApp.getProjectTriggers().map(function (t) { return t.getHandlerFunction(); });
+  if (fvId && existentes.indexOf('actualizarResumen') === -1) {
+    ScriptApp.newTrigger('actualizarResumen').forForm(FormApp.openById(fvId)).onFormSubmit().create();
+    ScriptApp.newTrigger('actualizarResumen').forSpreadsheet(ss).onEdit().create();
+  }
+  Logger.log('Listo: coordenadas corregidas y Resumen actualizado.');
+}
+
+/** Escribe en "Resumen": id | promedio | votos (sin contar las filas con Oculto = Sí). */
+function actualizarResumen() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const val = ss.getSheetByName('Valoraciones');
+  const res = ss.getSheetByName('Resumen') || ss.insertSheet('Resumen');
+  const datos = {};
+  if (val && val.getLastRow() > 1) {
+    const filas = val.getRange(2, 1, val.getLastRow() - 1, 6).getValues();
+    filas.forEach(function (f) {
+      const m = String(f[1]).match(/\(([^()]+)\)\s*$/);
+      const estrellas = Number(f[2]);
+      const oculto = String(f[5]).trim().toLowerCase();
+      if (!m || !estrellas || oculto === 'sí' || oculto === 'si') return;
+      const id = m[1].trim();
+      if (!datos[id]) datos[id] = { suma: 0, n: 0 };
+      datos[id].suma += estrellas;
+      datos[id].n += 1;
+    });
+  }
+  const out = [['id', 'promedio', 'votos']];
+  Object.keys(datos).sort().forEach(function (id) {
+    out.push([id, Math.round(datos[id].suma / datos[id].n * 10) / 10, datos[id].n]);
+  });
+  res.clear();
+  res.getRange(1, 1, out.length, 3).setValues(out);
+}
