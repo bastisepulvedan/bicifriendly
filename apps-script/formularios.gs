@@ -262,8 +262,11 @@ function actualizarResumen() {
     const res = ss.getSheetByName('Resumen') || ss.insertSheet('Resumen');
     const datos = {};
     let descartadas = 0;
+    const rafagas = {};       // id -> tiempos de votos aceptados (ventana deslizante)
+    const ignorados = {};     // id -> votos ignorados por ráfaga
     if (val && val.getLastRow() > 1) {
       const filas = val.getRange(2, 1, val.getLastRow() - 1, 6).getValues();
+      filas.sort(function (a, b) { return new Date(a[0]) - new Date(b[0]); });
       filas.forEach(function (f) {
         const m = String(f[1]).match(/\(([a-z0-9-]{2,60})\)\s*$/);
         const estrellas = Number(f[2]);
@@ -272,6 +275,14 @@ function actualizarResumen() {
         // Solo cuentan respuestas con un lugar reconocible y de 1 a 5 estrellas enteras.
         if (!m || !Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) { descartadas++; return; }
         const id = m[1];
+        // Anti-relleno: por lugar cuentan como máximo RAFAGA_MAX votos en RAFAGA_MIN minutos y DIA_MAX en 24 horas.
+        const ts = new Date(f[0]).getTime() || 0;
+        const r = rafagas[id] || (rafagas[id] = []);
+        const recientes = r.filter(function (x) { return ts - x <= RAFAGA_MIN * 60000; }).length;
+        const delDia = r.filter(function (x) { return ts - x <= 86400000; }).length;
+        if (recientes >= RAFAGA_MAX || delDia >= DIA_MAX) { ignorados[id] = (ignorados[id] || 0) + 1; return; }
+        r.push(ts);
+        while (r.length && ts - r[0] > 86400000) r.shift();
         if (!datos[id]) datos[id] = { suma: 0, n: 0 };
         datos[id].suma += estrellas;
         datos[id].n += 1;
@@ -286,12 +297,29 @@ function actualizarResumen() {
     const sobra = res.getLastRow() - out.length;
     if (sobra > 0) res.getRange(out.length + 1, 1, sobra, 3).clearContent();
     if (descartadas) console.warn('actualizarResumen: ' + descartadas + ' respuestas descartadas por datos inválidos');
+    escribirAlertas_(ss, ignorados);
   } catch (e) {
     console.error('actualizarResumen falló: ' + (e && e.stack || e));
     throw e;
   } finally {
     lock.releaseLock();
   }
+}
+
+// Votos que superan la ráfaga permitida: se anotan en la hoja "Alertas" para revisar.
+// Si son legítimos, se pueden aceptar quitándolos de la ventana (o subiendo RAFAGA_MAX).
+const RAFAGA_MAX = 3;
+const RAFAGA_MIN = 10;
+const DIA_MAX = 8;          // y como máximo 8 votos por lugar en 24 horas
+function escribirAlertas_(ss, ignorados) {
+  const ids = Object.keys(ignorados);
+  const h = ss.getSheetByName('Alertas') || ss.insertSheet('Alertas');
+  const out = [['Lugar', 'Votos ignorados por ráfaga', 'Revisado el']];
+  ids.sort().forEach(function (id) { out.push([id, ignorados[id], new Date()]); });
+  h.getRange(1, 1, out.length, 3).setValues(out);
+  const sobra = h.getLastRow() - out.length;
+  if (sobra > 0) h.getRange(out.length + 1, 1, sobra, 3).clearContent();
+  if (ids.length) console.warn('Posible relleno de votos en: ' + ids.join(', '));
 }
 
 // ---------- Lista de lugares del formulario de valoraciones ----------

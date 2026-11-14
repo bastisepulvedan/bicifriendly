@@ -26,8 +26,10 @@ const REG_HOJA_VISITAS = 'Visitas';
 const REG_HOJA_CONTADORES = 'Contadores';
 const REG_EVENTOS = ['visita', 'ficha', 'ir_bici', 'mapas', 'filtro', 'cerca', 'guardar', 'buscar', 'sugerir', 'valorar', 'tema', 'error'];
 // Límites contra abuso: por navegador y en total, por minuto.
-const REG_MAX_POR_SESION = 60;
-const REG_MAX_TOTAL = 1500;
+const REG_MAX_POR_SESION = 60;     // eventos por navegador y minuto
+const REG_MAX_TOTAL = 300;         // eventos totales por minuto (todas las sesiones)
+const REG_MAX_BLOQUE = 6000;       // eventos totales por bloque de 6 horas
+const REG_MAX_FILAS = 150000;      // filas máximas en "Visitas"; las más antiguas se borran
 const REG_MAX_BYTES = 20000;
 const REG_COLUMNAS = ['Fecha', 'Sesión', 'Evento', 'Lugar', 'Detalle', 'Dispositivo', 'Tema', 'Origen'];
 
@@ -40,14 +42,15 @@ function doPost(e) {
     let lista = Array.isArray(body.ev) ? body.ev.slice(0, 50) : [];
     // Cuotas por minuto con la caché del script (no guarda nada en la planilla).
     const cache = CacheService.getScriptCache();
-    const min = Math.floor(Date.now() / 60000);
-    const kS = 's:' + sid + ':' + min, kT = 't:' + min;
-    const usadoS = Number(cache.get(kS) || 0), usadoT = Number(cache.get(kT) || 0);
-    const cupo = Math.max(0, Math.min(REG_MAX_POR_SESION - usadoS, REG_MAX_TOTAL - usadoT));
+    const min = Math.floor(Date.now() / 60000), bloque = Math.floor(Date.now() / 21600000);
+    const kS = 's:' + sid + ':' + min, kT = 't:' + min, kB = 'b:' + bloque;
+    const usadoS = Number(cache.get(kS) || 0), usadoT = Number(cache.get(kT) || 0), usadoB = Number(cache.get(kB) || 0);
+    const cupo = Math.max(0, Math.min(REG_MAX_POR_SESION - usadoS, REG_MAX_TOTAL - usadoT, REG_MAX_BLOQUE - usadoB));
     if (cupo <= 0) return ContentService.createTextOutput('ok');
     lista = lista.slice(0, cupo);
     cache.put(kS, String(usadoS + lista.length), 120);
     cache.put(kT, String(usadoT + lista.length), 120);
+    cache.put(kB, String(usadoB + lista.length), 21600);
     const ahora = new Date();
     const filas = lista
       .filter(function (v) { return v && REG_EVENTOS.indexOf(String(v.e)) !== -1; })
@@ -70,6 +73,9 @@ function doPost(e) {
 /** Resume "Visitas" en "Contadores". Primera fila: totales del sitio (id = _sitio). */
 function actualizarContadores() {
   const hoja = regHoja_(REG_HOJA_VISITAS, REG_COLUMNAS);
+  // Mantención: si "Visitas" crece demasiado (por uso normal o un ataque), se borran las filas más antiguas.
+  const exceso = hoja.getLastRow() - 1 - REG_MAX_FILAS;
+  if (exceso > 0) hoja.deleteRows(2, exceso);
   const datos = hoja.getLastRow() > 1 ? hoja.getRange(2, 1, hoja.getLastRow() - 1, REG_COLUMNAS.length).getValues() : [];
   const ahora = Date.now(), dia = 86400000;
   const hoyIni = new Date(); hoyIni.setHours(0, 0, 0, 0);
@@ -124,6 +130,7 @@ function regHoja_(nombre, cabecera) {
 
 // Texto corto y sin fórmulas (evita que algo como "=..." se ejecute en la planilla).
 function regTxt_(x, n) {
-  const t = String(x == null ? '' : x).slice(0, n);
+  // Quita caracteres de control e invisibles, espacios al inicio, y neutraliza fórmulas.
+  const t = String(x == null ? '' : x).replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u2028-\u202F\u2060-\u206F\uFEFF]/g, '').replace(/^\s+/, '').slice(0, n);
   return /^[=+\-@]/.test(t) ? "'" + t : t;
 }

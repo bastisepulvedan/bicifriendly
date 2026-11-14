@@ -2,11 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-F1jZgyqvUbU860Cp4YCyai3/9H8vhbXjcUzDiIwl6oc=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#000000">
 <script>
 // Tema: automático (claro de 7:00 a 19:59, oscuro de noche) salvo que la persona elija uno.
 (function () { var pref = 'auto'; try { pref = localStorage.getItem('bf-tema') || 'auto'; } catch (e) {}
+  if (pref !== 'light' && pref !== 'dark') pref = 'auto';
   var h = new Date().getHours(); var t = pref === 'auto' ? (h >= 7 && h < 20 ? 'light' : 'dark') : pref;
   document.documentElement.setAttribute('data-theme', t); })();
 </script>
@@ -22,6 +26,17 @@ window.addEventListener('unhandledrejection', function (e) {
   var r = e.reason, x = { err: r instanceof Error ? r : new Error('Promesa rechazada: ' + String(r)), where: 'promesa' };
   if (window.__bfReport) window.__bfReport(x.err, x.where); else window.__bfErr.push(x);
 });
+document.addEventListener('click', function (e) { if (e.target && e.target.id === 'fatalReload') location.reload(); });
+// Que nadie incruste la página dentro de otro sitio (clickjacking).
+if (window.top !== window.self) {
+  document.documentElement.style.visibility = 'hidden';
+  document.addEventListener('DOMContentLoaded', function () {
+    var a = document.createElement('a'); a.href = location.href; a.target = '_top'; a.rel = 'noopener';
+    a.textContent = 'Abrir BiciFriendly en su propia ventana';
+    a.setAttribute('style', 'visibility:visible;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;color:#FF7A1A;font:800 18px sans-serif;z-index:99999');
+    document.body.appendChild(a);
+  });
+}
 // Si el script principal no termina de iniciar, se muestra un aviso con opción de recargar.
 window.addEventListener('load', function () { setTimeout(function () {
   if (window.__bfReady) return; var f = document.getElementById('fatal'); if (f) f.hidden = false;
@@ -996,7 +1011,7 @@ a.tile.ask:hover { border-color: var(--orange); }
 <body>
 <div class="fatal" id="fatal" role="alert" hidden>
   <p><b>La página no cargó bien.</b> Revisa tu conexión y vuelve a intentarlo.</p>
-  <button type="button" onclick="location.reload()">Recargar</button>
+  <button type="button" id="fatalReload">Recargar</button>
 </div>
 <noscript><div class="fatal"><p><b>BiciFriendly necesita JavaScript.</b> Actívalo en tu navegador para ver el mapa y la lista.</p></div></noscript>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1072,7 +1087,7 @@ a.tile.ask:hover { border-color: var(--orange); }
 <div class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="dtName" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="vendor/leaflet-1.9.4.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>
 (function () {
   var CONFIG = {
@@ -1086,7 +1101,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261114.1848';
+  var BUILD = '20261114.1906';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1158,6 +1173,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     { key: 'ruta', label: 'Parada de ruta' }
   ];
   var PLACES = [
+
     {"id":"draga","name":"Draga Coffee","type":"cafe","address":"Huelén 71","comuna":"Providencia","lat":-33.4317,"lng":-70.623,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"felix","name":"Félix Café","type":"cafe","address":"Coyancura 2223, local 8","comuna":"Providencia","lat":-33.42363,"lng":-70.60851,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"singular","name":"Singular Coffee × All4Bikers","type":"cafe","address":"Av. Las Condes 11700, local 102-A","comuna":"Vitacura","lat":-33.379,"lng":-70.5335,"taller":true,"extra":"Tienda y servicio técnico All4Bikers","ruta":"Camino a Farellones y Lo Barnechea","src":"Ridechile feb 2026"},
@@ -1257,7 +1273,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   // Sin IP ni datos personales: un id al azar por navegador y el nombre de la acción.
   var TRACK = (CONFIG.registroUrl && /^https?:/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname) && navigator.doNotTrack !== '1') ? CONFIG.registroUrl : '';
   var sid = 'x';
-  try { sid = localStorage.getItem('bf-sid'); if (!sid) { sid = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('bf-sid', sid); } } catch (e) { sid = 'x'; }
+  try { sid = localStorage.getItem('bf-sid'); if (!/^[a-z0-9]{8,24}$/.test(sid || '')) { sid = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('bf-sid', sid); } } catch (e) { sid = 'x'; }
   var refDom = ''; try { refDom = document.referrer ? new URL(document.referrer).hostname : ''; if (refDom === location.hostname) refDom = ''; } catch (e) {}
   var evq = [];
   function track(ev, id, d) { if (!TRACK) return; evq.push({ e: ev, id: id || '', d: String(d || '').slice(0, ev === 'error' ? 150 : 60) }); if (evq.length >= 20) flush(); }
@@ -1493,7 +1509,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   $('mapRetry').addEventListener('click', function () {
     var b = this; b.disabled = true; b.textContent = 'Cargando…';
     var sc = document.createElement('script');
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    sc.src = 'vendor/leaflet-1.9.4.js?r=' + Date.now(); sc.integrity = 'sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH'; sc.crossOrigin = 'anonymous';
     sc.onload = function () { $('mapFail').hidden = true; step('mapa', function () { initMap(); }); };
     sc.onerror = function () { b.disabled = false; b.textContent = 'Reintentar'; toast('El mapa sigue sin cargar. Revisa tu conexión.'); };
     document.head.appendChild(sc);
@@ -1502,6 +1518,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   // ---------- Tema claro / oscuro ----------
   var themePref = 'auto';
   try { themePref = localStorage.getItem('bf-tema') || 'auto'; } catch (e) {}
+  if (themePref !== 'light' && themePref !== 'dark') themePref = 'auto';
   var THEME_LBL = { auto: 'Tema automático según la hora', light: 'Tema claro', dark: 'Tema oscuro' };
   function applyTheme() {
     var h = new Date().getHours();
