@@ -10,6 +10,23 @@
   var h = new Date().getHours(); var t = pref === 'auto' ? (h >= 7 && h < 20 ? 'light' : 'dark') : pref;
   document.documentElement.setAttribute('data-theme', t); })();
 </script>
+<script>
+// Captura temprana de errores: se guardan hasta que el script principal pueda reportarlos.
+window.__bfErr = [];
+window.addEventListener('error', function (e) {
+  if (e.target && e.target !== window && e.target.tagName) return; // recursos que no cargan: se manejan aparte
+  var x = { err: e.error || new Error(String(e.message || 'Error')), where: 'global' };
+  if (window.__bfReport) window.__bfReport(x.err, x.where); else window.__bfErr.push(x);
+});
+window.addEventListener('unhandledrejection', function (e) {
+  var r = e.reason, x = { err: r instanceof Error ? r : new Error('Promesa rechazada: ' + String(r)), where: 'promesa' };
+  if (window.__bfReport) window.__bfReport(x.err, x.where); else window.__bfErr.push(x);
+});
+// Si el script principal no termina de iniciar, se muestra un aviso con opción de recargar.
+window.addEventListener('load', function () { setTimeout(function () {
+  if (window.__bfReady) return; var f = document.getElementById('fatal'); if (f) f.hidden = false;
+}, 1500); });
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -855,6 +872,19 @@ a.chip { text-decoration: none; }
 .mapwrap { position: relative; min-height: 0; background: var(--s0); }
 #map { position: absolute; inset: 0; }
 .leaflet-container { background: var(--s0); font-family: var(--body); }
+/* Carga: skeletons en vez de spinners */
+.sk { display: inline-block; height: 12px; vertical-align: middle; background: linear-gradient(90deg, var(--s3) 0%, var(--hover) 50%, var(--s3) 100%); background-size: 200% 100%; animation: sk 1.2s ease-in-out infinite; }
+.sk-stars { width: 84px; } .sk-text { width: 120px; margin-left: 10px; }
+@keyframes sk { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+#map.loading::after { content: ""; position: absolute; inset: 0; z-index: 401; pointer-events: none; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.06) 50%, transparent 70%); background-size: 200% 100%; animation: sk 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sk, #map.loading::after { animation: none; } }
+.map-fail { position: absolute; left: 24px; top: 24px; z-index: 500; width: min(340px, calc(100% - 48px)); padding: 20px; background: var(--s1); border: 1px solid var(--line); box-shadow: 0 16px 48px var(--shadow); }
+.map-fail p { margin: 0 0 14px; font-size: 14px; line-height: 1.45; color: var(--muted); } .map-fail b { color: var(--ink); }
+.fatal { position: fixed; left: 16px; right: 16px; top: 16px; z-index: 2000; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 16px 18px; background: var(--ink); color: var(--bg); }
+.fatal p { margin: 0; font-size: 15px; line-height: 1.4; } .fatal button { border: 0; padding: 10px 16px; background: var(--orange); color: #000; font: 800 14px var(--body); cursor: pointer; }
+.fatal[hidden], .map-fail[hidden] { display: none; }
+.fx-rate .muted { color: var(--dim); font-size: 13px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 #map.no-tiles { background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 56px 56px; }
 .leaflet-bar { border: 0 !important; border-radius: 0 !important; box-shadow: 0 8px 24px var(--shadow-s) !important; }
 .leaflet-bar a { background: var(--s2); color: var(--ink); border-color: var(--line); border-radius: 0 !important; width: 40px !important; height: 40px !important; line-height: 40px !important; }
@@ -964,6 +994,11 @@ a.tile.ask:hover { border-color: var(--orange); }
 </style>
 </head>
 <body>
+<div class="fatal" id="fatal" role="alert" hidden>
+  <p><b>La página no cargó bien.</b> Revisa tu conexión y vuelve a intentarlo.</p>
+  <button type="button" onclick="location.reload()">Recargar</button>
+</div>
+<noscript><div class="fatal"><p><b>BiciFriendly necesita JavaScript.</b> Actívalo en tu navegador para ver el mapa y la lista.</p></div></noscript>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17 9 9h6l3.5 8"/><path d="M9 9l3 8h1"/><path d="M8 6h3"/><path d="M15 9l-1-3h2"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
@@ -1018,7 +1053,11 @@ a.tile.ask:hover { border-color: var(--orange); }
       </div>
     </section>
     <section class="mapwrap" aria-label="Mapa">
-      <div id="map"></div>
+      <div id="map" class="loading"></div>
+      <div class="map-fail" id="mapFail" role="status" hidden>
+        <p><b>No pudimos cargar el mapa.</b> La lista y los botones para ir en bici funcionan igual.</p>
+        <button type="button" class="chip" id="mapRetry">Reintentar</button>
+      </div>
       <div class="card" id="card" hidden></div>
     </section>
   </main>
@@ -1043,8 +1082,67 @@ a.tile.ask:hover { border-color: var(--orange); }
     registroUrl: '',
     // Hoja "Contadores" publicada como CSV (opcional; muestra contadores públicos).
     contadoresCsvUrl: '',
+    // Sentry (opcional): URL del Loader Script del proyecto, https://js.sentry-cdn.com/<clave-publica>.min.js
+    sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
+  var BUILD = '20261114.1848';
+
+  // ---------- Errores: reporte central ----------
+  // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
+  var errCount = 0, errSeen = {};
+  function report(err, where, level) {
+    try {
+      var msg = (err && err.message) || String(err);
+      var key = where + '|' + msg; if (errSeen[key]) return; errSeen[key] = 1;
+      if (++errCount > 25) return;
+      if (window.console && console.error) console.error('[BiciFriendly] ' + where + ':', err);
+      if (window.Sentry && Sentry.withScope) toSentry(err, where, level);
+      else if (sentryPending) sentryPending.push([err, where, level]);
+      if (typeof track === 'function') track('error', '', (where + ': ' + msg).slice(0, 150));
+    } catch (x) {}
+  }
+  // Errores ocurridos antes de que cargue Sentry: quedan en cola y se envían al cargar.
+  var sentryPending = CONFIG.sentryLoader ? [] : null;
+  function toSentry(err, where, level) {
+    Sentry.withScope(function (sc) { sc.setTag('area', where); if (level) sc.setLevel(level);
+      if (err instanceof Error) Sentry.captureException(err); else Sentry.captureMessage(String(err)); });
+  }
+  function guard(where, fn) { return function () { try { return fn.apply(this, arguments); } catch (e) { report(e, where); } }; }
+  function step(where, fn) { try { fn(); } catch (e) { report(e, where); } }
+  window.__bfReport = report;
+
+  // ---------- Sentry (opcional): Loader Script del proyecto, sin datos personales ----------
+  if (CONFIG.sentryLoader && /^https:\/\/js\.sentry-cdn\.com\/[A-Za-z0-9]+\.min\.js$/.test(CONFIG.sentryLoader)) {
+    window.sentryOnLoad = function () {
+      Sentry.init({
+        environment: location.hostname === 'bicifriendly.cl' ? 'produccion' : 'pruebas',
+        release: 'bicifriendly@' + BUILD,
+        sendDefaultPii: false,
+        tracesSampleRate: 0,
+        denyUrls: [/extensions\//i, /^chrome:\/\//i, /^moz-extension:\/\//i, /^safari-web-extension:/i],
+        beforeSend: function (ev) {
+          if (ev.request) { delete ev.request.cookies; if (ev.request.url) ev.request.url = ev.request.url.split('?')[0]; }
+          if (ev.user) { delete ev.user.ip_address; delete ev.user.email; }
+          return ev;
+        }
+      });
+      var q = sentryPending || []; sentryPending = null; q.forEach(function (x) { toSentry(x[0], x[1], x[2]); });
+    };
+    step('sentry', function () { var sc = document.createElement('script'); sc.src = CONFIG.sentryLoader; sc.crossOrigin = 'anonymous'; document.head.appendChild(sc); });
+  }
+
+  // ---------- Red: fetch con límite de tiempo (nunca queda cargando para siempre) ----------
+  function fetchText(url, ms) {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 8000);
+    return fetch(url, { cache: 'no-store', signal: ctl ? ctl.signal : undefined }).then(function (r) {
+      clearTimeout(timer); if (!r.ok) throw new Error('HTTP ' + r.status); return r.text();
+    }, function (e) { clearTimeout(timer); throw (e && e.name === 'AbortError') ? new Error('Tiempo de espera agotado') : e; });
+  }
+  function withRetry(fn, tries, wait) {
+    return fn().catch(function (e) { if (tries <= 1) throw e; return new Promise(function (ok) { setTimeout(ok, wait || 2500); }).then(function () { return withRetry(fn, tries - 1, wait); }); });
+  }
   var TYPES = [
     { key: 'cafe', label: 'Café', plural: 'Cafés', glyph: 'C' },
     { key: 'bar', label: 'Bar', plural: 'Bares', glyph: 'B' },
@@ -1126,8 +1224,15 @@ a.tile.ask:hover { border-color: var(--orange); }
 
 
   var state = { type: 'all', q: '', perks: {}, sel: null, me: null, savedOnly: false };
-  var RATINGS = {};
+  // Valoraciones: null = cargando (skeleton), false = no disponibles, objeto = listas.
+  var RATINGS = CONFIG.resumenCsvUrl && window.fetch ? null : {};
   var typeBy = {}; TYPES.forEach(function (t) { typeBy[t.key] = t; });
+  // Un lugar mal escrito no debe romper la página: se descarta y se reporta.
+  PLACES = PLACES.filter(function (p) {
+    var ok = !!(p && p.id && p.name && typeBy[p.type] && isFinite(p.lat) && isFinite(p.lng) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180);
+    if (!ok) setTimeout(function () { report(new Error('Lugar con datos inválidos: ' + (p && p.id)), 'datos', 'warning'); }, 0);
+    return ok;
+  });
   var byId = {}; PLACES.forEach(function (p) { byId[p.id] = p; });
   var mq = null; try { mq = matchMedia('(max-width: 820px)'); } catch (e) {}
   var reduce = false; try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
@@ -1155,7 +1260,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   try { sid = localStorage.getItem('bf-sid'); if (!sid) { sid = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('bf-sid', sid); } } catch (e) { sid = 'x'; }
   var refDom = ''; try { refDom = document.referrer ? new URL(document.referrer).hostname : ''; if (refDom === location.hostname) refDom = ''; } catch (e) {}
   var evq = [];
-  function track(ev, id, d) { if (!TRACK) return; evq.push({ e: ev, id: id || '', d: String(d || '').slice(0, 60) }); if (evq.length >= 20) flush(); }
+  function track(ev, id, d) { if (!TRACK) return; evq.push({ e: ev, id: id || '', d: String(d || '').slice(0, ev === 'error' ? 150 : 60) }); if (evq.length >= 20) flush(); }
   function flush() {
     if (!TRACK || !evq.length) return;
     var body = JSON.stringify({ sid: sid, dev: isMobile() ? 'movil' : 'escritorio', th: document.documentElement.getAttribute('data-theme') || '', ref: refDom, ev: evq.splice(0, evq.length) });
@@ -1244,7 +1349,7 @@ a.tile.ask:hover { border-color: var(--orange); }
       return;
     }
     el.innerHTML = list.map(function (p) {
-      var t = typeBy[p.type], dp = distParts(p), r = RATINGS[p.id];
+      var t = typeBy[p.type], dp = distParts(p), r = RATINGS && RATINGS[p.id];
       var plate = dp ? '<span class="plate"><b>' + dp[0] + '</b><small>' + dp[1] + '</small></span>'
                      : '<span class="plate glyph"><b>' + t.glyph + '</b><small>' + esc(t.label) + '</small></span>';
       var rate = r ? '<span class="mini">' + starsHtml(r.avg) + '<b>' + fmt1(r.avg) + '</b>(' + r.n + ')</span>' : '';
@@ -1266,9 +1371,11 @@ a.tile.ask:hover { border-color: var(--orange); }
            '<a class="go" data-ev="mapas" data-id="' + p.id + '" href="' + aDir(p) + '" target="_blank" rel="noopener">Mapas</a></div>';
   }
   function fxHtml(p, mobile) {
-    var t = typeBy[p.type], dp = distParts(p), r = RATINGS[p.id], ru = rateUrl(p), sug = CONFIG.sugerirUrl;
+    var t = typeBy[p.type], dp = distParts(p), r = RATINGS && RATINGS[p.id], ru = rateUrl(p), sug = CONFIG.sugerirUrl;
     var kind = t.label + ' · ' + esc(p.comuna) + (dp && !mobile ? ' · ' + shortDist(dp) + ' · ' + bikeMin(p) + ' min en bici' : '');
     var rate = '<div class="fx-rate">' + (r ? starsHtml(r.avg) + '<b>' + fmt1(r.avg) + '</b><span>' + r.n + (r.n === 1 ? ' valoración' : ' valoraciones') + '</span>'
+                                             : RATINGS === null ? '<span class="sk sk-stars" aria-hidden="true"></span><span class="sk sk-text" aria-hidden="true"></span><span class="sr">Cargando valoraciones</span>'
+                                             : RATINGS === false ? '<span class="muted">Valoraciones no disponibles por ahora</span>'
                                              : starsHtml(0) + '<span>Aún sin valoraciones</span>') +
                (ru ? '<a data-ev="valorar" data-id="' + p.id + '" href="' + ru + '" target="_blank" rel="noopener">★ Valorar</a>' : '') + '</div>';
     var tiles = [];
@@ -1373,9 +1480,25 @@ a.tile.ask:hover { border-color: var(--orange); }
     base.bringToBack();
     tiles = [base, ref];
     var ok = false, errs = 0;
-    base.on('tileload', function () { ok = true; $('map').classList.remove('no-tiles'); });
-    base.on('tileerror', function () { if (!ok && ++errs >= 3) $('map').classList.add('no-tiles'); });
+    var mEl = $('map'); mEl.classList.add('loading');
+    var slow = setTimeout(function () { if (!ok) { mEl.classList.remove('loading'); mEl.classList.add('no-tiles'); report(new Error('El mapa base tarda más de 10 s'), 'mapa-teselas', 'warning'); } }, 10000);
+    base.on('tileload', function () { if (!ok) { ok = true; clearTimeout(slow); } mEl.classList.remove('loading', 'no-tiles'); });
+    base.on('tileerror', function () { if (!ok && ++errs >= 3) { clearTimeout(slow); mEl.classList.remove('loading'); mEl.classList.add('no-tiles'); report(new Error('No cargan las teselas del mapa'), 'mapa-teselas', 'warning'); } });
   }
+  function mapFail(why) {
+    $('map').classList.remove('loading'); $('map').classList.add('no-tiles');
+    $('mapFail').hidden = false;
+    report(new Error('Mapa no disponible: ' + why), 'mapa', 'warning');
+  }
+  $('mapRetry').addEventListener('click', function () {
+    var b = this; b.disabled = true; b.textContent = 'Cargando…';
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    sc.onload = function () { $('mapFail').hidden = true; step('mapa', function () { initMap(); }); };
+    sc.onerror = function () { b.disabled = false; b.textContent = 'Reintentar'; toast('El mapa sigue sin cargar. Revisa tu conexión.'); };
+    document.head.appendChild(sc);
+  });
+
   // ---------- Tema claro / oscuro ----------
   var themePref = 'auto';
   try { themePref = localStorage.getItem('bf-tema') || 'auto'; } catch (e) {}
@@ -1485,14 +1608,15 @@ a.tile.ask:hover { border-color: var(--orange); }
   }
   function loadRatings() {
     if (!CONFIG.resumenCsvUrl || !window.fetch) return;
-    fetch(CONFIG.resumenCsvUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (txt) {
+    withRetry(function () { return fetchText(CONFIG.resumenCsvUrl, 8000); }, 2).then(function (txt) {
       var rows = parseCsv(txt || ''), out = {};
+      if (!rows.length || String(rows[0][0] || '').trim().toLowerCase() !== 'id') throw new Error('CSV de valoraciones con formato inesperado');
       for (var i = 1; i < rows.length; i++) {
         var id = (rows[i][0] || '').trim(), avg = parseFloat(String(rows[i][1] || '').replace(',', '.')), n = parseInt(rows[i][2], 10);
         if (id && !isNaN(avg) && n > 0) out[id] = { avg: avg, n: n };
       }
       RATINGS = out; renderList(); renderCard();
-    }).catch(function () {});
+    }).catch(function (e) { RATINGS = false; renderList(); renderCard(); report(e, 'valoraciones', 'warning'); });
   }
 
   // ---------- Contadores públicos (hoja Contadores publicada, opcional) ----------
@@ -1500,7 +1624,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   function fmtN(n) { return Math.round(n).toLocaleString('es-CL'); }
   function loadCounts() {
     if (!CONFIG.contadoresCsvUrl || !window.fetch) return;
-    fetch(CONFIG.contadoresCsvUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (txt) {
+    withRetry(function () { return fetchText(CONFIG.contadoresCsvUrl, 8000); }, 2).then(function (txt) {
       var rows = parseCsv(txt || ''); if (rows.length < 2) return;
       var h = rows[0].map(function (x) { return x.trim(); }), out = { sitio: null, lugar: {} };
       for (var i = 1; i < rows.length; i++) {
@@ -1509,7 +1633,7 @@ a.tile.ask:hover { border-color: var(--orange); }
         if (id === '_sitio') out.sitio = o; else out.lugar[id] = o;
       }
       COUNTS = out; renderCounts(); renderCard();
-    }).catch(function () {});
+    }).catch(function (e) { report(e, 'contadores', 'warning'); });
   }
   function renderCounts() {
     var el = $('counts'); if (!el || !COUNTS || !COUNTS.sitio || !COUNTS.sitio.visitas) return;
@@ -1576,18 +1700,22 @@ a.tile.ask:hover { border-color: var(--orange); }
     document.querySelectorAll('.sugBtn').forEach(function (a) { a.href = CONFIG.sugerirUrl; a.hidden = false; a.setAttribute('data-ev', 'sugerir'); });
     var fs = $('footSug'); fs.querySelector('a').href = CONFIG.sugerirUrl; fs.querySelector('a').setAttribute('data-ev', 'sugerir'); fs.hidden = false;
   }
-  $('themeBtn').addEventListener('click', cycleTheme);
-  setInterval(function () { if (themePref === 'auto') applyTheme(); }, 5 * 60 * 1000);
-  applyTheme();
-  renderFilters(); renderList();
-  setSnap('half');
-  if (window.L) initMap();
-  loadRatings();
-  loadCounts();
-  track('visita', byId[(location.hash || '').slice(1)] ? (location.hash || '').slice(1) : '');
-  setTimeout(flush, 3000);
+  // Las funciones que usan los eventos quedan protegidas: un error se reporta y no congela la página.
+  renderList = guard('lista', renderList); renderCard = guard('ficha', renderCard); renderFilters = guard('filtros', renderFilters);
+  syncMarkers = guard('marcadores', syncMarkers); openDetail = guard('detalle', openDetail); select = guard('seleccion', select);
+  locate = guard('ubicacion', locate); applyTheme = guard('tema', applyTheme);
+
+  (window.__bfErr || []).forEach(function (x) { report(x.err, x.where); }); window.__bfErr = [];
+  step('tema', function () { $('themeBtn').addEventListener('click', cycleTheme); setInterval(function () { if (themePref === 'auto') applyTheme(); }, 5 * 60 * 1000); applyTheme(); });
+  step('lista', function () { renderFilters(); renderList(); });
+  step('hoja', function () { setSnap('half'); });
+  step('mapa', function () { if (window.L) initMap(); else mapFail('no cargó la librería del mapa'); });
+  step('valoraciones', loadRatings);
+  step('contadores', loadCounts);
+  step('registro', function () { track('visita', byId[(location.hash || '').slice(1)] ? (location.hash || '').slice(1) : ''); setTimeout(flush, 3000); });
   var start = (location.hash || '').slice(1);
   if (byId[start]) setTimeout(function () { select(start, { scroll: true }); }, 80);
+  window.__bfReady = true;
 })();
 </script>
 </body>

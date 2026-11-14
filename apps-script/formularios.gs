@@ -253,27 +253,83 @@ function arreglarPlanilla() {
 
 /** Escribe en "Resumen": id | promedio | votos (sin contar las filas con Oculto = Sí). */
 function actualizarResumen() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const val = ss.getSheetByName('Valoraciones');
-  const res = ss.getSheetByName('Resumen') || ss.insertSheet('Resumen');
-  const datos = {};
-  if (val && val.getLastRow() > 1) {
-    const filas = val.getRange(2, 1, val.getLastRow() - 1, 6).getValues();
-    filas.forEach(function (f) {
-      const m = String(f[1]).match(/\(([^()]+)\)\s*$/);
-      const estrellas = Number(f[2]);
-      const oculto = String(f[5]).trim().toLowerCase();
-      if (!m || !estrellas || oculto === 'sí' || oculto === 'si') return;
-      const id = m[1].trim();
-      if (!datos[id]) datos[id] = { suma: 0, n: 0 };
-      datos[id].suma += estrellas;
-      datos[id].n += 1;
+  // Un solo cálculo a la vez: el formulario y las ediciones manuales pueden disparar esto juntos.
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(20000)) { console.warn('actualizarResumen: otra ejecución en curso, se omite'); return; }
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const val = ss.getSheetByName('Valoraciones');
+    const res = ss.getSheetByName('Resumen') || ss.insertSheet('Resumen');
+    const datos = {};
+    let descartadas = 0;
+    if (val && val.getLastRow() > 1) {
+      const filas = val.getRange(2, 1, val.getLastRow() - 1, 6).getValues();
+      filas.forEach(function (f) {
+        const m = String(f[1]).match(/\(([a-z0-9-]{2,60})\)\s*$/);
+        const estrellas = Number(f[2]);
+        const oculto = String(f[5]).trim().toLowerCase();
+        if (oculto === 'sí' || oculto === 'si') return;
+        // Solo cuentan respuestas con un lugar reconocible y de 1 a 5 estrellas enteras.
+        if (!m || !Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) { descartadas++; return; }
+        const id = m[1];
+        if (!datos[id]) datos[id] = { suma: 0, n: 0 };
+        datos[id].suma += estrellas;
+        datos[id].n += 1;
+      });
+    }
+    const out = [['id', 'promedio', 'votos']];
+    Object.keys(datos).sort().forEach(function (id) {
+      out.push([id, Math.round(datos[id].suma / datos[id].n * 10) / 10, datos[id].n]);
     });
+    // Escribe primero y después limpia lo que sobra: el CSV publicado nunca queda vacío a medias.
+    res.getRange(1, 1, out.length, 3).setValues(out);
+    const sobra = res.getLastRow() - out.length;
+    if (sobra > 0) res.getRange(out.length + 1, 1, sobra, 3).clearContent();
+    if (descartadas) console.warn('actualizarResumen: ' + descartadas + ' respuestas descartadas por datos inválidos');
+  } catch (e) {
+    console.error('actualizarResumen falló: ' + (e && e.stack || e));
+    throw e;
+  } finally {
+    lock.releaseLock();
   }
-  const out = [['id', 'promedio', 'votos']];
-  Object.keys(datos).sort().forEach(function (id) {
-    out.push([id, Math.round(datos[id].suma / datos[id].n * 10) / 10, datos[id].n]);
+}
+
+// ---------- Lista de lugares del formulario de valoraciones ----------
+// La página publica https://bicifriendly.cl/places.json con todos sus lugares. Esta función
+// copia esa lista al formulario, así el botón «Valorar» de cada lugar siempre lo encuentra.
+// Si el archivo no se puede leer o viene raro, no toca el formulario.
+const URL_LUGARES = 'https://bicifriendly.cl/places.json';
+
+function sincronizarLugares() {
+  const id = PropertiesService.getScriptProperties().getProperty('FORM_VALORAR_ID');
+  if (!id) throw new Error('Primero ejecuta crearFormularios.');
+  let lista;
+  try {
+    const r = UrlFetchApp.fetch(URL_LUGARES + '?t=' + Date.now(), { muteHttpExceptions: true, followRedirects: true });
+    if (r.getResponseCode() !== 200) throw new Error('HTTP ' + r.getResponseCode());
+    lista = JSON.parse(r.getContentText());
+  } catch (e) {
+    console.warn('sincronizarLugares: no se pudo leer places.json (' + e + '). El formulario queda como estaba.');
+    return;
+  }
+  if (!Array.isArray(lista) || lista.length < 5) {
+    console.warn('sincronizarLugares: places.json trae ' + (lista && lista.length) + ' lugares. No se cambia el formulario.');
+    return;
+  }
+  const opciones = lista
+    .filter(function (p) { return p && /^[a-z0-9-]{2,60}$/.test(String(p.id)) && String(p.name || '').trim(); })
+    .map(function (p) { return String(p.name).trim() + ' (' + String(p.id).trim() + ')'; });
+  const unicas = Array.from(new Set(opciones)).sort(function (a, b) { return a.localeCompare(b, 'es'); });
+  const item = FormApp.openById(id).getItems(FormApp.ItemType.LIST)[0].asListItem();
+  item.setChoiceValues(unicas);
+  console.log('sincronizarLugares: ' + unicas.length + ' lugares en el formulario.');
+}
+
+/** Ejecutar una vez: sincroniza ahora y deja la sincronización cada 6 horas. */
+function instalarSincronizacion() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'sincronizarLugares') ScriptApp.deleteTrigger(t);
   });
-  res.clear();
-  res.getRange(1, 1, out.length, 3).setValues(out);
+  ScriptApp.newTrigger('sincronizarLugares').timeBased().everyHours(6).create();
+  sincronizarLugares();
 }

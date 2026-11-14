@@ -1,0 +1,374 @@
+[
+{
+"id": "draga",
+"name": "Draga Coffee",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "felix",
+"name": "Félix Café",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "singular",
+"name": "Singular Coffee × All4Bikers",
+"type": "cafe",
+"comuna": "Vitacura"
+},
+{
+"id": "caramagnola",
+"name": "Caramagnola Bike & Beer",
+"type": "bar",
+"comuna": "La Reina"
+},
+{
+"id": "elcamino",
+"name": "El Camino Diner",
+"type": "restaurant",
+"comuna": "Providencia"
+},
+{
+"id": "mut",
+"name": "MUT · Mercado Urbano Tobalaba",
+"type": "punto",
+"comuna": "Las Condes"
+},
+{
+"id": "parador",
+"name": "Parador del Ciclista",
+"type": "punto",
+"comuna": "Lo Barnechea"
+},
+{
+"id": "letelier",
+"name": "Caffè Letelier",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "singularsuecia",
+"name": "Singular Coffee Suecia",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "elephant",
+"name": "The Elephant Coffee",
+"type": "cafe",
+"comuna": "Las Condes"
+},
+{
+"id": "fuentechilenaomnium",
+"name": "Fuente Chilena · Omnium",
+"type": "rapida",
+"comuna": "Las Condes"
+},
+{
+"id": "fuentechilenapdv",
+"name": "Fuente Chilena · Pedro de Valdivia",
+"type": "rapida",
+"comuna": "Providencia"
+},
+{
+"id": "elephanthortensias",
+"name": "The Elephant Coffee · Las Hortensias",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "grupeta",
+"name": "La Grupeta Café",
+"type": "cafe",
+"comuna": "Lo Barnechea"
+},
+{
+"id": "pergola",
+"name": "La Pérgola del San Cristóbal",
+"type": "cafe",
+"comuna": "Recoleta"
+},
+{
+"id": "rinconciclistas",
+"name": "El Rincón de los Ciclistas",
+"type": "punto",
+"comuna": "San José de Maipo"
+},
+{
+"id": "carreton",
+"name": "Kiosco El Carretón",
+"type": "rapida",
+"comuna": "San José de Maipo"
+},
+{
+"id": "curva21",
+"name": "Kiosco Curva 21 «Saca Pica»",
+"type": "rapida",
+"comuna": "Lo Barnechea"
+},
+{
+"id": "scl-el-eje-cafetero",
+"name": "El eje cafetero",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-miyuki-coffee",
+"name": "Miyuki Coffee",
+"type": "cafe",
+"comuna": "San Miguel"
+},
+{
+"id": "scl-ciao-fiorentina",
+"name": "Ciao Fiorentina",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-casa-dagostino",
+"name": "Casa D’Agostino",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-central-brew",
+"name": "Central Brew",
+"type": "cafe",
+"comuna": "Ñuñoa"
+},
+{
+"id": "scl-nodo-cafe",
+"name": "Nodo Café",
+"type": "cafe",
+"comuna": "Ñuñoa"
+},
+{
+"id": "scl-norai",
+"name": "Norai",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-cafe-prensa",
+"name": "Café Prensa",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-draga-coffee-co-roman-diaz",
+"name": "Draga Coffee Co. · Román Díaz",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-ratio-coffee-company",
+"name": "Ratio Coffee Company",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-arrayan-cafe",
+"name": "Arrayán Café",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-cafe-black-mamba",
+"name": "Café Black Mamba",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-cafe-rayo-negro",
+"name": "Café Rayo Negro",
+"type": "cafe",
+"comuna": "Ñuñoa"
+},
+{
+"id": "scl-cafe-triciclo",
+"name": "Café Triciclo",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-coffee-culture-la-paz",
+"name": "Coffee Culture · La Paz",
+"type": "cafe",
+"comuna": "Independencia"
+},
+{
+"id": "scl-good-cafe",
+"name": "Good Café",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-quila-cafe",
+"name": "Quila Café",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-r3-coffee-londres",
+"name": "R3 Coffee · Londres",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-welkom-coffee",
+"name": "Welkom Coffee",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-justicia-cafe",
+"name": "Justicia Café",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-chilean-coffee-mercado-condell",
+"name": "Chilean Coffee · Mercado Condell",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-chilean-coffee-santa-isabel",
+"name": "Chilean Coffee · Santa Isabel",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-3841-coffee-roasters",
+"name": "3841 Coffee Roasters",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-cafe-altura-bulnes",
+"name": "Café Altura · Bulnes",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-cafe-altura-la-vega",
+"name": "Café Altura · La Vega",
+"type": "cafe",
+"comuna": "Recoleta"
+},
+{
+"id": "scl-cafe-altura-manuel-montt",
+"name": "Café Altura · Manuel Montt",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-cafe-altura-mut",
+"name": "Café Altura · MUT",
+"type": "cafe",
+"comuna": "Las Condes"
+},
+{
+"id": "scl-cafe-altura-moneda",
+"name": "Café Altura · Moneda",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-cafe-area",
+"name": "Café Área",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-cafe-las-donas",
+"name": "Café Las Doñas",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-cafecito-house",
+"name": "Cafecito House",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-caracol-coffee-house",
+"name": "Caracol Coffee House",
+"type": "cafe",
+"comuna": "Vitacura"
+},
+{
+"id": "scl-coete-cafe-luis-thayer-ojeda",
+"name": "Coete Café · Luis Thayer Ojeda",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-el-galgo-cafe",
+"name": "El Galgo Café",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-espresshood",
+"name": "EspressHood",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-la-loba-cafe",
+"name": "La Loba Café",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "scl-atha-coffee",
+"name": "Atha Coffee",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "scl-oli-cafe",
+"name": "Oli Café",
+"type": "cafe",
+"comuna": "Santiago"
+},
+{
+"id": "caramagnolahda",
+"name": "Pizzería Caramagnola · Hernando de Aguirre",
+"type": "restaurant",
+"comuna": "Providencia"
+},
+{
+"id": "sucucho",
+"name": "Sucucho Bike",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "litbust",
+"name": "Café Literario Bustamante",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "litbalm",
+"name": "Café Literario Balmaceda",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "labici",
+"name": "Café la Bicicleta",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "bikecostanera",
+"name": "Bike Costanera",
+"type": "punto",
+"comuna": "Providencia"
+}
+]

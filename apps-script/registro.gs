@@ -24,18 +24,35 @@
 
 const REG_HOJA_VISITAS = 'Visitas';
 const REG_HOJA_CONTADORES = 'Contadores';
-const REG_EVENTOS = ['visita', 'ficha', 'ir_bici', 'mapas', 'filtro', 'cerca', 'guardar', 'buscar', 'sugerir', 'valorar', 'tema'];
+const REG_EVENTOS = ['visita', 'ficha', 'ir_bici', 'mapas', 'filtro', 'cerca', 'guardar', 'buscar', 'sugerir', 'valorar', 'tema', 'error'];
+// Límites contra abuso: por navegador y en total, por minuto.
+const REG_MAX_POR_SESION = 60;
+const REG_MAX_TOTAL = 1500;
+const REG_MAX_BYTES = 20000;
 const REG_COLUMNAS = ['Fecha', 'Sesión', 'Evento', 'Lugar', 'Detalle', 'Dispositivo', 'Tema', 'Origen'];
 
 function doPost(e) {
   try {
-    const body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    const lista = Array.isArray(body.ev) ? body.ev.slice(0, 50) : [];
+    const raw = (e && e.postData && e.postData.contents) || '';
+    if (!raw || raw.length > REG_MAX_BYTES) return ContentService.createTextOutput('ok');
+    const body = JSON.parse(raw);
+    const sid = regTxt_(body.sid, 40) || 'x';
+    let lista = Array.isArray(body.ev) ? body.ev.slice(0, 50) : [];
+    // Cuotas por minuto con la caché del script (no guarda nada en la planilla).
+    const cache = CacheService.getScriptCache();
+    const min = Math.floor(Date.now() / 60000);
+    const kS = 's:' + sid + ':' + min, kT = 't:' + min;
+    const usadoS = Number(cache.get(kS) || 0), usadoT = Number(cache.get(kT) || 0);
+    const cupo = Math.max(0, Math.min(REG_MAX_POR_SESION - usadoS, REG_MAX_TOTAL - usadoT));
+    if (cupo <= 0) return ContentService.createTextOutput('ok');
+    lista = lista.slice(0, cupo);
+    cache.put(kS, String(usadoS + lista.length), 120);
+    cache.put(kT, String(usadoT + lista.length), 120);
     const ahora = new Date();
     const filas = lista
       .filter(function (v) { return v && REG_EVENTOS.indexOf(String(v.e)) !== -1; })
       .map(function (v) {
-        return [ahora, regTxt_(body.sid, 40), regTxt_(v.e, 20), regTxt_(v.id, 60), regTxt_(v.d, 60),
+        return [ahora, sid, regTxt_(v.e, 20), regTxt_(v.id, 60), regTxt_(v.d, 160),
                 regTxt_(body.dev, 12), regTxt_(body.th, 8), regTxt_(body.ref, 60)];
       });
     if (filas.length) {
@@ -46,7 +63,7 @@ function doPost(e) {
         hoja.getRange(hoja.getLastRow() + 1, 1, filas.length, REG_COLUMNAS.length).setValues(filas);
       } finally { lock.releaseLock(); }
     }
-  } catch (err) { /* nunca romper la página por un error de registro */ }
+  } catch (err) { console.warn('doPost: ' + err); /* nunca romper la página por un error de registro */ }
   return ContentService.createTextOutput('ok');
 }
 
@@ -56,7 +73,7 @@ function actualizarContadores() {
   const datos = hoja.getLastRow() > 1 ? hoja.getRange(2, 1, hoja.getLastRow() - 1, REG_COLUMNAS.length).getValues() : [];
   const ahora = Date.now(), dia = 86400000;
   const hoyIni = new Date(); hoyIni.setHours(0, 0, 0, 0);
-  const sitio = { visitas: 0, hoy: 0, d7: 0, d30: 0, sesiones: {}, ficha: 0, ir_bici: 0, mapas: 0, guardar: 0, cerca: 0, filtro: 0, buscar: 0, sugerir: 0, valorar: 0, movil: 0, escritorio: 0 };
+  const sitio = { visitas: 0, hoy: 0, d7: 0, d30: 0, sesiones: {}, ficha: 0, ir_bici: 0, mapas: 0, guardar: 0, cerca: 0, filtro: 0, buscar: 0, sugerir: 0, valorar: 0, error: 0, error7: 0, movil: 0, escritorio: 0 };
   const lugares = {};
   datos.forEach(function (r) {
     const f = r[0] instanceof Date ? r[0].getTime() : new Date(r[0]).getTime();
@@ -68,16 +85,16 @@ function actualizarContadores() {
       if (ahora - f <= 30 * dia) sitio.d30++;
       sitio.sesiones[r[1]] = 1;
       if (r[5] === 'movil') sitio.movil++; else if (r[5] === 'escritorio') sitio.escritorio++;
-    } else if (sitio[ev] !== undefined) sitio[ev]++;
+    } else if (sitio[ev] !== undefined) { sitio[ev]++; if (ev === 'error' && ahora - f <= 7 * dia) sitio.error7++; }
     if (id && ['ficha', 'ir_bici', 'mapas', 'guardar'].indexOf(ev) !== -1) {
       const l = lugares[id] || (lugares[id] = { ficha: 0, ir_bici: 0, mapas: 0, guardar: 0 });
       l[ev]++;
     }
   });
-  const cab = ['id', 'visitas', 'visitas_hoy', 'visitas_7d', 'visitas_30d', 'personas', 'fichas', 'ir_bici', 'mapas', 'guardados', 'cerca_de_mi', 'filtros', 'busquedas', 'sugerir', 'valorar', 'movil', 'escritorio', 'actualizado'];
-  const filas = [['_sitio', sitio.visitas, sitio.hoy, sitio.d7, sitio.d30, Object.keys(sitio.sesiones).length, sitio.ficha, sitio.ir_bici, sitio.mapas, sitio.guardar, sitio.cerca, sitio.filtro, sitio.buscar, sitio.sugerir, sitio.valorar, sitio.movil, sitio.escritorio, new Date()]];
+  const cab = ['id', 'visitas', 'visitas_hoy', 'visitas_7d', 'visitas_30d', 'personas', 'fichas', 'ir_bici', 'mapas', 'guardados', 'cerca_de_mi', 'filtros', 'busquedas', 'sugerir', 'valorar', 'errores', 'errores_7d', 'movil', 'escritorio', 'actualizado'];
+  const filas = [['_sitio', sitio.visitas, sitio.hoy, sitio.d7, sitio.d30, Object.keys(sitio.sesiones).length, sitio.ficha, sitio.ir_bici, sitio.mapas, sitio.guardar, sitio.cerca, sitio.filtro, sitio.buscar, sitio.sugerir, sitio.valorar, sitio.error, sitio.error7, sitio.movil, sitio.escritorio, new Date()]];
   Object.keys(lugares).sort(function (a, b) { return (lugares[b].ir_bici + lugares[b].ficha) - (lugares[a].ir_bici + lugares[a].ficha); })
-    .forEach(function (id) { const l = lugares[id]; filas.push([id, '', '', '', '', '', l.ficha, l.ir_bici, l.mapas, l.guardar, '', '', '', '', '', '', '', '']); });
+    .forEach(function (id) { const l = lugares[id]; filas.push([id, '', '', '', '', '', l.ficha, l.ir_bici, l.mapas, l.guardar, '', '', '', '', '', '', '', '', '', '']); });
   const c = regHoja_(REG_HOJA_CONTADORES, cab);
   if (c.getLastRow() > 1) c.getRange(2, 1, c.getLastRow() - 1, cab.length).clearContent();
   c.getRange(2, 1, filas.length, cab.length).setValues(filas);
