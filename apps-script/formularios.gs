@@ -23,7 +23,9 @@ const TIPOS = ['Café', 'Bar', 'Comida rápida', 'Restaurant', 'Punto ciclista']
 
 function crearFormularios() {
   const props = PropertiesService.getScriptProperties();
-  if (props.getProperty('FORM_APORTES_ID')) {
+  let yaExiste = !!props.getProperty('FORM_APORTES_ID');
+  if (!yaExiste) { try { formId_('FORM_APORTES_ID'); yaExiste = true; } catch (e) {} }
+  if (yaExiste) {
     throw new Error('Los formularios ya fueron creados. Revisa la hoja "Config". Para refrescar la lista de lugares usa actualizarLugares.');
   }
   const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -142,10 +144,39 @@ function crearFormularios() {
   Logger.log('Valora un lugar (base): ' + urlValorar);
 }
 
+// Busca los formularios ya creados aunque este proyecto no tenga guardados sus identificadores
+// (por ejemplo, si el código se pegó en un proyecto nuevo). Revisa las hojas conectadas a un
+// formulario ("Valoraciones" y "Aportes") y, si no, los links de edición de la hoja "Config".
+function formId_(clave) {
+  const props = PropertiesService.getScriptProperties();
+  const guardado = props.getProperty(clave);
+  if (guardado) return guardado;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const nombre = clave === 'FORM_VALORAR_ID' ? 'Valoraciones' : 'Aportes';
+  const palabra = clave === 'FORM_VALORAR_ID' ? 'valora' : 'sugiere';
+  let id = null;
+  const hojas = ss.getSheets();
+  for (let i = 0; i < hojas.length && !id; i++) {
+    const url = hojas[i].getFormUrl();
+    if (!url) continue;
+    const f = FormApp.openByUrl(url);
+    if (hojas[i].getName().indexOf(nombre) === 0 || f.getTitle().toLowerCase().indexOf(palabra) !== -1) id = f.getId();
+  }
+  const cfg = ss.getSheetByName('Config');
+  if (!id && cfg) {
+    const fila = clave === 'FORM_VALORAR_ID' ? 5 : 4;
+    const m = String(cfg.getRange(fila, 2).getValue()).match(/\/forms\/d\/([a-zA-Z0-9_-]+)/);
+    if (m) id = m[1];
+  }
+  if (!id) throw new Error('No encontré el formulario "' + nombre + '". Revisa que la hoja "' + nombre + '" siga conectada a su formulario.');
+  props.setProperty(clave, id);
+  console.log('Formulario ' + nombre + ' encontrado y guardado: ' + id);
+  return id;
+}
+
 /** Refresca la lista "Lugar" del formulario de valoración con los lugares publicados. */
 function actualizarLugares() {
-  const id = PropertiesService.getScriptProperties().getProperty('FORM_VALORAR_ID');
-  if (!id) throw new Error('Primero ejecuta crearFormularios.');
+  const id = formId_('FORM_VALORAR_ID');
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const fv = FormApp.openById(id);
   const lista = fv.getItems(FormApp.ItemType.LIST)[0].asListItem();
@@ -242,7 +273,7 @@ function arreglarPlanilla() {
 
   // Triggers: al recibir una valoración y al editar la planilla (p. ej. marcar "Oculto").
   const props = PropertiesService.getScriptProperties();
-  const fvId = props.getProperty('FORM_VALORAR_ID');
+  const fvId = formId_('FORM_VALORAR_ID');
   const existentes = ScriptApp.getProjectTriggers().map(function (t) { return t.getHandlerFunction(); });
   if (fvId && existentes.indexOf('actualizarResumen') === -1) {
     ScriptApp.newTrigger('actualizarResumen').forForm(FormApp.openById(fvId)).onFormSubmit().create();
@@ -329,8 +360,7 @@ function escribirAlertas_(ss, ignorados) {
 const URL_LUGARES = 'https://bicifriendly.cl/places.json';
 
 function sincronizarLugares() {
-  const id = PropertiesService.getScriptProperties().getProperty('FORM_VALORAR_ID');
-  if (!id) throw new Error('Primero ejecuta crearFormularios.');
+  const id = formId_('FORM_VALORAR_ID');
   let lista;
   try {
     const r = UrlFetchApp.fetch(URL_LUGARES + '?t=' + Date.now(), { muteHttpExceptions: true, followRedirects: true });
