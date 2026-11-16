@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-GQ841BHXS3ZH58lgH1nuJgtkW3qh1XQo6bU+pKT5/oc=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-7fv4a2aags7Unoxj6Ha0knEDUkIZr33DF3qdTfX+ePY=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -1126,7 +1126,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261116.0248';
+  var BUILD = '20261116.0257';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1261,6 +1261,9 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"litbalm","name":"Café Literario Balmaceda","type":"cafe","address":"Parque Balmaceda, a la altura de Condell","comuna":"Providencia","lat":-33.432,"lng":-70.6262,"ciclovia":"Parque Balmaceda","src":"Confirmado por BiciFriendly nov 2026"},
     {"id":"labici","name":"Café la Bicicleta","type":"cafe","address":"Av. Pocuro 3091","comuna":"Providencia","lat":-33.4302,"lng":-70.5996,"taller":true,"ciclovia":"Pocuro","src":"Confirmado por BiciFriendly nov 2026"},
     {"id":"bikecostanera","name":"Bike Costanera","type":"punto","address":"Av. Andrés Bello 2425, acceso lateral","comuna":"Providencia","lat":-33.417,"lng":-70.607,"bicis":"Más de 800 estacionamientos","extra":"Duchas, lockers y herramientas","src":"Confirmado por BiciFriendly nov 2026"},
+    {"id":"dabruno","name":"Pizzería Da Bruno","type":"rapida","address":"Triana 857, Barrio Triana","comuna":"Providencia","lat":-33.4335574,"lng":-70.6248163,"exact":true,"bicis":"Bicicletero seguro","extra":"Pizza napolitana al paso","src":"Comunidad IG nov 2026"},
+    {"id":"olympia","name":"Olympia Frozen Yogurt","type":"cafe","address":"General Salvo 20","comuna":"Providencia","lat":-33.4332585,"lng":-70.6254437,"exact":true,"bicis":"Bicicletero seguro","extra":"Heladería de yogurt griego, a pasos de metro Salvador","src":"Comunidad IG nov 2026"},
+    {"id":"bluebird","name":"Blue Bird Café Vitacura","type":"cafe","address":"Av. Bicentenario 3883, local 3","comuna":"Vitacura","lat":-33.3982607,"lng":-70.6003616,"exact":true,"bicis":"Bicicletero","src":"Confirmado por BiciFriendly nov 2026"}
   ];
 
 
