@@ -11,6 +11,8 @@
  *  - actualizarContadores: resume la hoja "Visitas" en la hoja "Contadores"
  *    (totales del sitio y por lugar). Se ejecuta sola cada hora.
  *
+ * Las valoraciones hechas en la página también llegan por doPost (ver valoraciones.gs).
+ *
  * Pasos (una sola vez):
  *  1. Pega este archivo y guarda.
  *  2. Ejecuta instalarRegistro (acepta los permisos). Crea las hojas y el activador por hora.
@@ -38,6 +40,8 @@ function doPost(e) {
     const raw = (e && e.postData && e.postData.contents) || '';
     if (!raw || raw.length > REG_MAX_BYTES) return ContentService.createTextOutput('ok');
     const body = JSON.parse(raw);
+    // Valoración enviada desde la ficha de un lugar (ver valoraciones.gs).
+    if (body && body.tipo === 'valorar') return ContentService.createTextOutput(valorarWeb_(body));
     const sid = regTxt_(body.sid, 40) || 'x';
     let lista = Array.isArray(body.ev) ? body.ev.slice(0, 50) : [];
     // Cuotas por minuto con la caché del script (no guarda nada en la planilla).

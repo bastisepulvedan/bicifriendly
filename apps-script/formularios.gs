@@ -295,8 +295,10 @@ function actualizarResumen() {
     let descartadas = 0;
     const rafagas = {};       // id -> tiempos de votos aceptados (ventana deslizante)
     const ignorados = {};     // id -> votos ignorados por ráfaga
-    if (val && val.getLastRow() > 1) {
-      const filas = val.getRange(2, 1, val.getLastRow() - 1, 6).getValues();
+    // Votos del formulario de Google y votos hechos en la página ("Valoraciones web").
+    let filas = (val && val.getLastRow() > 1) ? val.getRange(2, 1, val.getLastRow() - 1, 6).getValues() : [];
+    if (typeof vwFilasParaResumen_ === 'function') filas = filas.concat(vwFilasParaResumen_(ss));
+    if (filas.length) {
       filas.sort(function (a, b) { return new Date(a[0]) - new Date(b[0]); });
       filas.forEach(function (f) {
         const m = String(f[1]).match(/\(([a-z0-9-]{2,60})\)\s*$/);

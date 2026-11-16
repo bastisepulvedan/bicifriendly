@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-7fv4a2aags7Unoxj6Ha0knEDUkIZr33DF3qdTfX+ePY=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-Ue/9criS5H1ybZftv2sMXtUxscC8NEL0ZN80QhIHvj4=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -955,6 +955,31 @@ a.tile.ask { background: transparent; border: 2px dashed var(--line); text-decor
 a.tile.ask:hover { border-color: var(--orange); }
 .tile.ask .cta { font-size: 12px; font-weight: 800; color: var(--or-text); }
 .fx-src { font-size: 12px; color: var(--dim); }
+/* Valorar en la misma ficha */
+.vote { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 2px solid var(--ink); }
+.vote h3 { margin: 0; }
+.vstars { display: flex; gap: 4px; }
+.vstars button { width: 44px; height: 44px; display: grid; place-items: center; border: 2px solid var(--line); background: var(--bg); color: var(--star-off); font: 22px/1 var(--body); cursor: pointer; padding: 0; }
+.vstars button.on { color: var(--orange); border-color: var(--ink); }
+.vstars button:hover { border-color: var(--ink); }
+.vote textarea { width: 100%; min-height: 84px; resize: vertical; padding: 12px; border: 2px solid var(--field-line); background: var(--field); color: var(--ink); font: 16px/1.4 var(--body); }
+.vote textarea:focus { outline: none; border-color: var(--orange); }
+.vote textarea::placeholder { color: var(--ph); opacity: 1; }
+.vrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vrow .go { min-height: 48px; }
+.vrow .go[disabled] { opacity: .45; cursor: not-allowed; }
+.vcount { font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.vnote { margin: 0; font-size: 12px; color: var(--dim); line-height: 1.4; }
+.vmsg { margin: 0; font-size: 14px; font-weight: 700; }
+.vmsg.err { color: var(--or-text); }
+.vdone { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 14px; background: var(--s2); font-size: 14px; }
+.vdone b { font-weight: 800; }
+.vdone button { border: 0; background: none; color: var(--or-text); font: 800 14px var(--body); cursor: pointer; padding: 8px 0; }
+.coms { display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0; list-style: none; }
+.coms li { padding: 12px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.coms li p { margin: 0; font-size: 14px; line-height: 1.45; }
+.coms .stars { font-size: 12px; align-self: flex-start; }
+.coms small { font-size: 12px; color: var(--dim); }
 .fx-count { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
 .fx-count svg { width: 18px; height: 18px; stroke: var(--or-text); }
 .fx-go { display: flex; gap: 8px; }
@@ -1119,6 +1144,8 @@ a.tile.ask:hover { border-color: var(--orange); }
     sugerirUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScBKorzcYyHLu7uTl7SB_kq44U6FuwJbCka6WKrGGBFI-zVuA/viewform',
     valorarUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSe_R7Johub372RBeJuobYJ9jfErKnGQ-d3Dgd_dCbQme-MXSQ/viewform?usp=pp_url&entry.1790817973=',
     // Registro de visitas y uso (Apps Script publicado como aplicación web, termina en /exec).
+    // Valorar y comentar en la misma ficha (requiere valoraciones.gs publicado en la aplicación web).
+    votarWeb: false,
     registroUrl: 'https://script.google.com/macros/s/AKfycbz4RJ3df4LzfbFI5Q8vTfPHOTxmBTUzHWxTLqtkNv6dHzwln2qNIeu35WLB561RLg/exec',
     // Hoja "Contadores" publicada como CSV (opcional; muestra contadores públicos).
     contadoresCsvUrl: '',
@@ -1126,7 +1153,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261116.0257';
+  var BUILD = '20261116.0307';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1269,7 +1296,13 @@ a.tile.ask:hover { border-color: var(--orange); }
 
   var state = { type: 'all', q: '', perks: {}, sel: null, me: null, savedOnly: false };
   // Valoraciones: null = cargando (skeleton), false = no disponibles, objeto = listas.
-  var RATINGS = CONFIG.resumenCsvUrl && window.fetch ? null : {};
+  var RATINGS = (CONFIG.resumenCsvUrl || CONFIG.registroUrl) && window.fetch ? null : {};
+  // Valorar en la misma ficha: va a la aplicación web del registro (valoraciones.gs).
+  var VOTE_URL = CONFIG.votarWeb === true && CONFIG.registroUrl && window.fetch && /^https:\/\/script\.google\.com\//.test(CONFIG.registroUrl) ? CONFIG.registroUrl : '';
+  var COMMENTS = {};
+  var VOTE_MAX_DIA = 8, VOTE_CAMBIOS_DIA = 3, VOTE_MAX_TXT = 500;
+  var votes = {}; try { votes = JSON.parse(localStorage.getItem('bf-votos') || '{}') || {}; } catch (e) { votes = {}; }
+  var draft = {}, editing = {}, sending = {}, voteMsg = {};
   var typeBy = {}; TYPES.forEach(function (t) { typeBy[t.key] = t; });
   // Un lugar mal escrito no debe romper la página: se descarta y se reporta.
   PLACES = PLACES.filter(function (p) {
@@ -1357,6 +1390,34 @@ a.tile.ask:hover { border-color: var(--orange); }
   }
   function starsHtml(avg) { var pct = Math.max(0, Math.min(100, avg / 5 * 100)); return '<span class="stars" aria-hidden="true"><i style="width:' + pct + '%"></i></span>'; }
   function fmt1(n) { return n.toFixed(1).replace('.', ','); }
+  function votesToday() { var now = Date.now(); return Object.keys(votes).filter(function (k) { return now - (votes[k].t || 0) < 86400000; }); }
+  function voteHtml(p) {
+    if (!VOTE_URL) return '';
+    var v = votes[p.id], m = voteMsg[p.id];
+    if (v && !editing[p.id]) {
+      return '<div class="vdone" role="status"><span>Valoraste este lugar con <b>' + v.n + (v.n === 1 ? ' estrella' : ' estrellas') + '</b>. Gracias.</span>' +
+        ((v.k || 1) < VOTE_CAMBIOS_DIA || Date.now() - (v.t || 0) >= 86400000 ? '<button type="button" data-vedit="' + p.id + '">Cambiar mi valoración</button>' : '') + '</div>';
+    }
+    if (!v && votesToday().length >= VOTE_MAX_DIA) return '<div class="vdone"><span>Ya valoraste ' + VOTE_MAX_DIA + ' lugares hoy. Vuelve mañana para valorar más.</span></div>';
+    var d = draft[p.id] || { n: v ? v.n : 0, c: '' }, stars = '';
+    for (var i = 1; i <= 5; i++) stars += '<button type="button" role="radio" aria-checked="' + (d.n === i) + '" aria-label="' + i + (i === 1 ? ' estrella' : ' estrellas') + '" data-star="' + i + '" data-vid="' + p.id + '" class="' + (i <= d.n ? 'on' : '') + '">★</button>';
+    return '<form class="vote" data-vote="' + p.id + '" novalidate><h3>¿Cómo te recibieron?</h3>' +
+      '<div class="vstars" role="radiogroup" aria-label="Tu valoración">' + stars + '</div>' +
+      '<label class="vh" for="vc-' + p.id + '">Comentario (opcional)</label>' +
+      '<textarea id="vc-' + p.id + '" data-vtxt="' + p.id + '" maxlength="' + VOTE_MAX_TXT + '" placeholder="Opcional: dónde dejaste la bici, cómo te atendieron">' + esc(d.c || '') + '</textarea>' +
+      '<div class="vrow"><span class="vcount" id="vn-' + p.id + '">' + (d.c || '').length + '/' + VOTE_MAX_TXT + '</span>' +
+      '<button type="submit" class="go main"' + (d.n && !sending[p.id] ? '' : ' disabled') + '>' + (sending[p.id] ? 'Enviando…' : 'Enviar valoración') + '</button></div>' +
+      (m ? '<p class="vmsg' + (m.err ? ' err' : '') + '" role="status">' + esc(m.t) + '</p>' : '') +
+      '<p class="vnote">Las estrellas se suman al promedio en unos minutos. Los comentarios se publican después de revisarlos. No incluyas datos personales.</p></form>';
+  }
+  function commentsHtml(p) {
+    var l = COMMENTS[p.id]; if (!l || !l.length) return '';
+    var meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    return '<h3>Comentarios de ciclistas</h3><ul class="coms">' + l.map(function (c) {
+      var f = String(c[2] || '').split('-'), fecha = f.length === 2 ? meses[(+f[1] || 1) - 1] + ' ' + f[0] : '';
+      return '<li>' + starsHtml(c[0]) + '<p>' + esc(c[1]) + '</p>' + (fecha ? '<small>' + fecha + '</small>' : '') + '</li>';
+    }).join('') + '</ul>';
+  }
   function rateUrl(p) { return CONFIG.valorarUrl ? CONFIG.valorarUrl + encodeURIComponent(p.name + ' (' + p.id + ')') : ''; }
   function shortDist(dp) { return dp[0] + ' ' + (dp[1] === 'metros' ? 'm' : 'km'); }
   // Minutos en bici aproximados: 15 km/h y 30% extra por calles (no es una ruta real).
@@ -1422,7 +1483,7 @@ a.tile.ask:hover { border-color: var(--orange); }
                                              : RATINGS === null ? '<span class="sk sk-stars" aria-hidden="true"></span><span class="sk sk-text" aria-hidden="true"></span><span class="sr">Cargando valoraciones</span>'
                                              : RATINGS === false ? '<span class="muted">Valoraciones no disponibles por ahora</span>'
                                              : starsHtml(0) + '<span>Aún sin valoraciones</span>') +
-               (ru ? '<a data-ev="valorar" data-id="' + p.id + '" href="' + ru + '" target="_blank" rel="noopener">★ Valorar</a>' : '') + '</div>';
+               (ru && !VOTE_URL ? '<a data-ev="valorar" data-id="' + p.id + '" href="' + ru + '" target="_blank" rel="noopener">★ Valorar</a>' : '') + '</div>';
     var tiles = [];
     var perk = p.descuento ? '<div class="fx-perk">' + esc(p.descuento) + ' de descuento si llegas en bici</div>' : '';
     if (p.bicis) tiles.push('<div class="tile">' + ico('i-park') + '<span class="txt">' + esc(p.bicis) + '</span></div>');
@@ -1436,7 +1497,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     var btns = mobile ? '' : '<div class="fx-btns">' + saveBtn(p) + '<button type="button" class="iconbtn" data-close="1" aria-label="Cerrar ficha">' + ico('i-x') + '</button></div>';
     return '<div class="fx t-' + p.type + '">' + btns +
       '<div class="fx-top"><span class="fx-kind">' + kind + '</span><h2 class="fx-name"' + (mobile ? ' id="dtName"' : '') + '>' + esc(p.name) + '</h2>' + dist + '</div>' +
-      '<span class="fx-addr">' + esc(p.address) + '</span>' + perk + rate + '<h3>Para ciclistas</h3><div class="tiles">' + tiles.join('') + '</div>' +
+      '<span class="fx-addr">' + esc(p.address) + '</span>' + perk + rate + '<h3>Para ciclistas</h3><div class="tiles">' + tiles.join('') + '</div>' + commentsHtml(p) + voteHtml(p) +
       (placeCount(p) ? '<span class="fx-count">' + ico('i-bike') + fmtN(placeCount(p)) + (placeCount(p) === 1 ? ' ciclista abrió' : ' ciclistas abrieron') + ' la ruta en bici desde BiciFriendly</span>' : '') +
       '<span class="fx-src">' + (p.src ? 'Fuente: ' + esc(p.src) + ', por verificar en terreno' : 'Sin fuente de datos ciclistas todavía') + '</span>' +
       (mobile ? '' : goHtml(p)) + '</div>';
@@ -1652,8 +1713,23 @@ a.tile.ask:hover { border-color: var(--orange); }
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
-  function loadRatings() {
-    if (!CONFIG.resumenCsvUrl || !window.fetch) return;
+  function loadRatings(fresh) {
+    if (!window.fetch) return;
+    if (VOTE_URL) {
+      withRetry(function () { return fetchText(VOTE_URL + '?q=valoraciones' + (fresh ? '&t=' + Date.now() : ''), 8000); }, 2).then(function (txt) {
+        var j = JSON.parse(txt), out = {}, com = {};
+        if (!j || typeof j.resumen !== 'object') throw new Error('Respuesta de valoraciones inesperada');
+        Object.keys(j.resumen).forEach(function (id) { var r = j.resumen[id]; if (byId[id] && r && +r[1] > 0) out[id] = { avg: +r[0], n: +r[1] }; });
+        Object.keys(j.comentarios || {}).forEach(function (id) { if (byId[id] && Array.isArray(j.comentarios[id])) com[id] = j.comentarios[id].slice(0, 5).filter(function (c) { return Array.isArray(c) && typeof c[1] === 'string'; }); });
+        RATINGS = out; COMMENTS = com; renderList(); renderCard(); refreshDetail();
+      }).catch(function (e) { report(e, 'valoraciones-web', 'warning'); loadRatingsCsv(); });
+      return;
+    }
+    loadRatingsCsv();
+  }
+  function refreshDetail() { if (state.sel && !$('detail').hidden) openDetail(state.sel, true); }
+  function loadRatingsCsv() {
+    if (!CONFIG.resumenCsvUrl || !window.fetch) { if (RATINGS === null) { RATINGS = false; renderList(); renderCard(); } return; }
     withRetry(function () { return fetchText(CONFIG.resumenCsvUrl, 8000); }, 2).then(function (txt) {
       var rows = parseCsv(txt || ''), out = {};
       if (!rows.length || String(rows[0][0] || '').trim().toLowerCase() !== 'id') throw new Error('CSV de valoraciones con formato inesperado');
@@ -1661,8 +1737,8 @@ a.tile.ask:hover { border-color: var(--orange); }
         var id = (rows[i][0] || '').trim(), avg = parseFloat(String(rows[i][1] || '').replace(',', '.')), n = parseInt(rows[i][2], 10);
         if (id && !isNaN(avg) && n > 0) out[id] = { avg: avg, n: n };
       }
-      RATINGS = out; renderList(); renderCard();
-    }).catch(function (e) { RATINGS = false; renderList(); renderCard(); report(e, 'valoraciones', 'warning'); });
+      RATINGS = out; renderList(); renderCard(); refreshDetail();
+    }).catch(function (e) { RATINGS = false; renderList(); renderCard(); refreshDetail(); report(e, 'valoraciones', 'warning'); });
   }
 
   // ---------- Contadores públicos (hoja Contadores publicada, opcional) ----------
@@ -1728,9 +1804,45 @@ a.tile.ask:hover { border-color: var(--orange); }
   document.addEventListener('click', function (e) {
     var tv = e.target.closest('[data-ev]'); if (tv) { track(tv.getAttribute('data-ev'), tv.getAttribute('data-id') || '', tv.getAttribute('data-d') || ''); flush(); }
     var s = e.target.closest('[data-save]'); if (s) { toggleSaved(s.dataset.save); return; }
+    var st = e.target.closest('[data-star]'); if (st) { var vid = st.getAttribute('data-vid'), d = draft[vid] || (draft[vid] = { n: 0, c: '' }); d.n = +st.getAttribute('data-star'); delete voteMsg[vid]; rerenderVote(vid, '[data-star="' + d.n + '"]'); return; }
+    var ve = e.target.closest('[data-vedit]'); if (ve) { var eid = ve.getAttribute('data-vedit'); editing[eid] = true; draft[eid] = { n: votes[eid] ? votes[eid].n : 0, c: '' }; rerenderVote(eid, '[data-star]'); return; }
     if (e.target.closest('[data-close]')) deselect();
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && state.sel) deselect(); });
+  // Valorar: el borrador sobrevive a los redibujos de la ficha.
+  function rerenderVote(id, focusSel) {
+    if (isMobile() && !$('detail').hidden) openDetail(id, true); else renderCard();
+    var root = isMobile() ? $('detail') : $('card'), f = focusSel && root.querySelector(focusSel);
+    if (f) try { f.focus({ preventScroll: true }); } catch (x) {}
+  }
+  document.addEventListener('input', function (e) {
+    var t = e.target; if (!t.matches || !t.matches('[data-vtxt]')) return;
+    var id = t.getAttribute('data-vtxt'), d = draft[id] || (draft[id] = { n: 0, c: '' });
+    d.c = t.value.slice(0, VOTE_MAX_TXT); var c = document.getElementById('vn-' + id); if (c) c.textContent = d.c.length + '/' + VOTE_MAX_TXT;
+  });
+  document.addEventListener('submit', function (e) {
+    var f = e.target.closest && e.target.closest('[data-vote]'); if (!f) return;
+    e.preventDefault();
+    var id = f.getAttribute('data-vote'), d = draft[id];
+    if (!d || !d.n || sending[id] || !byId[id]) return;
+    var prev = votes[id], fresh = !prev || Date.now() - (prev.t || 0) >= 86400000;
+    if (!prev && votesToday().length >= VOTE_MAX_DIA) return;
+    sending[id] = true; rerenderVote(id);
+    var body = JSON.stringify({ tipo: 'valorar', sid: sid, id: id, n: d.n, c: (d.c || '').trim().slice(0, VOTE_MAX_TXT) });
+    var ctl = window.AbortController ? new AbortController() : null, timer = setTimeout(function () { if (ctl) ctl.abort(); }, 12000);
+    fetch(VOTE_URL, { method: 'POST', mode: 'no-cors', body: body, signal: ctl ? ctl.signal : undefined }).then(function () {
+      clearTimeout(timer);
+      votes[id] = { n: d.n, t: fresh ? Date.now() : prev.t, k: fresh ? 1 : (prev.k || 1) + 1 };
+      try { localStorage.setItem('bf-votos', JSON.stringify(votes)); } catch (x) {}
+      delete draft[id]; delete editing[id]; delete voteMsg[id]; sending[id] = false;
+      track('valorar', id, String(d.n)); toast('Gracias, tu valoración quedó registrada');
+      rerenderVote(id); setTimeout(function () { loadRatings(true); }, 5000);
+    }, function (err) {
+      clearTimeout(timer); sending[id] = false;
+      voteMsg[id] = { err: true, t: 'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.' };
+      rerenderVote(id); report(err, 'valorar', 'warning');
+    });
+  });
   var qt;
   $('q').addEventListener('input', function (e) { state.q = e.target.value; clearTimeout(qt); qt = setTimeout(function () { renderList(); syncMarkers(true); }, 120);
     clearTimeout(qtt); var qv = e.target.value.trim(); if (qv.length >= 3) qtt = setTimeout(function () { track('buscar', '', qv); }, 1500); });
