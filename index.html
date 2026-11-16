@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-/bjg2VZh0NgJFiZhhCK3XSSHBVtoPqPKpM1H4iJUPfs=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-vsJ0NEjOGg0spg4NzCp+GyGzKeQ3QS7Sc6Ipj8ZyC+w=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -916,11 +916,18 @@ a.chip { text-decoration: none; }
 .leaflet-bar a:hover { background: var(--s2); color: var(--ink); }
 .leaflet-control-attribution { background: var(--attr) !important; color: var(--muted); font-size: 11px; }
 .leaflet-control-attribution a { color: var(--or-text); }
-.pin-wrap { background: none; border: 0; }
-.pin { position: relative; display: grid; place-items: center; width: 30px; height: 30px; background: var(--pin-bg); color: var(--pin-fg); border: 3px solid var(--bg); box-shadow: 0 2px 0 rgba(0,0,0,.25); transition: transform .15s; }
-.pin .gl { width: 11px; height: 11px; }
-.pin.on { transform: scale(1.35); background: var(--orange); color: #000; z-index: 1; }
-.pin.fav::after { content: ""; position: absolute; right: -6px; top: -6px; width: 10px; height: 10px; background: var(--orange); border: 2px solid var(--bg); }
+/* Pines: el tamaño sigue al zoom (s = ciudad, m = barrio, l = calle); el área táctil siempre es de 30 px. */
+.pin-wrap { background: none; border: 0; display: grid; place-items: center; }
+.pin { position: relative; display: grid; place-items: center; width: 30px; height: 30px; background: var(--pin-bg); color: var(--pin-fg); border: 3px solid var(--bg); box-shadow: 0 1px 0 rgba(0,0,0,.25); transition: width .15s, height .15s; }
+.pin .gl { width: 15px; height: 15px; }
+#map[data-z="m"] .pin { width: 24px; height: 24px; border-width: 2px; }
+#map[data-z="m"] .pin .gl { width: 12px; height: 12px; }
+#map[data-z="s"] .pin { width: 19px; height: 19px; border-width: 2px; }
+#map[data-z="s"] .pin .gl { width: 9px; height: 9px; }
+#map .pin.on { width: 36px; height: 36px; border-width: 3px; background: var(--orange); color: #000; z-index: 1; }
+#map .pin.on .gl { width: 17px; height: 17px; }
+.pin-wrap:hover .pin:not(.on) { background: var(--orange); color: #000; }
+.pin.fav::after { content: ""; position: absolute; right: -5px; top: -5px; width: 8px; height: 8px; background: var(--orange); border: 2px solid var(--bg); }
 .me-dot { width: 18px; height: 18px; border-radius: 50%; background: #1C6FD1; border: 3px solid #fff; box-shadow: 0 0 0 8px rgba(28,111,209,.22); }
 
 /* Ficha: letrero + cuerpo */
@@ -1153,7 +1160,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261116.0313';
+  var BUILD = '20261116.1603';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1572,7 +1579,9 @@ a.tile.ask:hover { border-color: var(--orange); }
     map.attributionControl.setPrefix(false);
     layer = L.layerGroup().addTo(map);
     map.on('click', function () { if (!isMobile() && state.sel) deselect(); });
-    syncMarkers(true);
+    function pinZoom() { var z = map.getZoom(); $('map').setAttribute('data-z', z <= 12 ? 's' : z <= 14 ? 'm' : 'l'); }
+    map.on('zoomend', pinZoom);
+    syncMarkers(true); pinZoom();
   }
   var tiles = [], tilesFor = null;
   function setTiles() {
