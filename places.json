@@ -378,6 +378,12 @@
 "comuna": "Vitacura"
 },
 {
+"id": "lacleta",
+"name": "Caffè LaCleta",
+"type": "cafe",
+"comuna": "La Florida"
+},
+{
 "id": "fuente5",
 "name": "Fuente Número 5",
 "type": "bar",
