@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-ffsuZI6jPxOoa30TH7jgzkPGqzXl4P9HABpaKlH1Bvg=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-JdtZUiz/Z60ZRcH8GwRQIsXZjhL0Qnx6+Vxcte8/5q8=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -1243,7 +1243,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261117.0207';
+  var BUILD = '20261117.0211';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1322,13 +1322,16 @@ a.tile.ask:hover { border-color: var(--orange); }
   function vegBadge(p) { var v = p.veg && VEG[p.veg]; return v ? '<span class="vg ' + p.veg + '">' + ico(v.icon) + v.label + '</span>' : ''; }
   // Filtros combinables, en orden de prioridad; los dos primeros quedan a la vista en el celular
   var PERKS = [
-    { key: 'bicis', label: 'Bicicletero', quick: true },
+    { key: 'bicis', label: 'Bicicletero', quick: true, test: bikeOk },
     { key: 'veg', label: 'Opciones veganas', quick: true, icon: 'i-leaf', test: function (p) { return p.veg === 'vn'; } },
     { key: 'taller', label: 'Taller' },
     { key: 'ciclovia', label: 'Ciclovía cerca' },
     { key: 'ruta', label: 'Parada de ruta' },
     { key: 'descuento', label: 'Descuento' }
   ];
+  // Bicicletero confirmado: el dato dice dónde estacionar (bicicletero o estacionamientos).
+  // «Bici friendly» sin detalle viene de guías y no cuenta.
+  function bikeOk(p) { return !!p.bicis && /bicicletero|estacionamiento/i.test(p.bicis); }
   function has(p, k) { return k.test ? k.test(p) : !!p[k.key]; }
   var PLACES = [
 
@@ -1625,13 +1628,13 @@ a.tile.ask:hover { border-color: var(--orange); }
                (ru && !VOTE_URL ? '<a data-ev="valorar" data-id="' + p.id + '" href="' + ru + '" target="_blank" rel="noopener">★ Valorar</a>' : '') + '</div>';
     var tiles = [];
     var perk = p.descuento ? '<div class="fx-perk">' + esc(p.descuento) + ' de descuento si llegas en bici</div>' : '';
-    if (p.bicis) tiles.push('<div class="tile">' + ico('i-park') + '<span class="txt">' + esc(p.bicis) + '</span></div>');
+    if (p.bicis) tiles.push('<div class="tile">' + (bikeOk(p) ? ico('i-park') : '') + '<span class="txt">' + esc(p.bicis) + '</span></div>');
     if (p.taller) tiles.push('<div class="tile">' + ico('i-wrench') + '<span class="txt">Taller mecánico</span></div>');
     if (p.ciclovia) tiles.push('<div class="tile">' + ico('i-lane') + '<span class="txt">Ciclovía ' + esc(p.ciclovia) + '</span></div>');
     if (p.ruta) tiles.push('<div class="tile">' + ico('i-bike') + '<span class="txt">' + esc(p.ruta) + '</span></div>');
     if (p.extra) tiles.push('<div class="tile"><span class="txt">' + esc(p.extra) + '</span></div>');
     function ask(txt) { return sug ? '<a class="tile ask" data-ev="sugerir" data-id="' + p.id + '" href="' + sug + '" target="_blank" rel="noopener"><span class="txt">' + txt + '</span><span class="cta">Cuéntanos</span></a>' : ''; }
-    if (!p.bicis) tiles.push(ask('¿Tiene bicicletero?'));
+    if (!bikeOk(p)) tiles.push(ask('¿Tiene bicicletero?'));
     if (!p.descuento) tiles.push(ask('¿Hay descuento para ciclistas?'));
     var veg = p.veg ? '<h3>Comida veggie</h3><div class="tiles"><div class="tile vtile">' + ico(VEG[p.veg].icon) + '<span class="txt">' + esc(p.vegnota || (p.veg === 'vn' ? 'Tiene opciones veganas' : 'Tiene opciones vegetarianas')) + '</span><small>' + esc(VEG_SRC) + '</small></div></div>' : '';
     var btns = mobile ? '' : '<div class="fx-btns">' + saveBtn(p) + '<button type="button" class="iconbtn" data-close="1" aria-label="Cerrar ficha">' + ico('i-x') + '</button></div>';
