@@ -388,5 +388,17 @@
 "name": "Blue Bird Café Vitacura",
 "type": "cafe",
 "comuna": "Vitacura"
+},
+{
+"id": "fuente5",
+"name": "Fuente Número 5",
+"type": "bar",
+"comuna": "Vitacura"
+},
+{
+"id": "frenchtakos",
+"name": "Autentiko French Takos",
+"type": "rapida",
+"comuna": "Providencia"
 }
 ]
