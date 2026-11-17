@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-vsJ0NEjOGg0spg4NzCp+GyGzKeQ3QS7Sc6Ipj8ZyC+w=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-HOdO3BGPN+iCKPNR/zYrFyN1epB2y70A6lnLtrskC7k=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -954,6 +954,27 @@ a.chip { text-decoration: none; }
 .fx-rate a { margin-left: auto; font-weight: 800; font-size: 14px; text-decoration: none; padding: 8px 0; }
 .fx h3 { margin: 0; font: 800 16px var(--display); letter-spacing: -0.02em; }
 .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+/* Veggie: hoja llena = opciones veganas, hoja de contorno = vegetariano */
+:root { --gL: #6BCB77; --gD: #2E7D32; }
+.vg { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px 2px; border: 2px solid var(--ink); font: 800 11px/1 var(--body); white-space: nowrap; align-self: flex-start; }
+.vg svg { width: 14px; height: 14px; stroke: currentColor; fill: none; flex: none; }
+.vg.vn { background: var(--ink); color: var(--bg); --leaf-cut: var(--ink); }
+.vg.vn svg { color: var(--gD); }
+html:not([data-theme="light"]) .vg.vn svg { color: var(--gD); }
+html[data-theme="light"] .vg.vn svg { color: var(--gL); }
+.vg.vt { background: transparent; color: var(--ink); }
+.vg.vt svg { color: var(--gD); }
+html:not([data-theme="light"]) .vg.vt svg { color: var(--gL); }
+.fx-top .vg.vn { background: var(--sign-ink); color: var(--sign); border-color: var(--sign-ink); --leaf-cut: var(--sign-ink); }
+.fx-top .vg.vn svg { color: var(--gD); }
+.fx-top .vg.vt { border-color: var(--sign-sub); color: var(--sign-ink); }
+.chip .ic2 { display: inline-flex; color: var(--gD); --leaf-cut: var(--bg); }
+.chip .ic2 svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+.chip[aria-pressed="true"] .ic2 { color: var(--gL); --leaf-cut: var(--ink); }
+.tile.vtile svg { color: var(--gD); stroke: currentColor; fill: none; }
+html:not([data-theme="light"]) .tile.vtile svg { color: var(--gL); }
+.tile.vtile { --leaf-cut: var(--s2); }
+.tile.vtile small { font-size: 12px; color: var(--muted); }
 .tile { background: var(--s2); padding: 12px; display: flex; flex-direction: column; gap: 8px; border-left: 4px solid var(--ink); min-height: 76px; }
 .tile .big { font: 800 20px/1 var(--display); color: var(--or-text); letter-spacing: -0.02em; }
 .tile svg { width: 22px; height: 22px; stroke: var(--ink); }
@@ -1078,6 +1099,8 @@ a.tile.ask:hover { border-color: var(--orange); }
   <symbol id="i-lane" viewBox="0 0 24 24"><path d="M6 3 4 21"/><path d="M18 3l2 18"/><path d="M12 4v3M12 10.5v3M12 17v3"/></symbol>
   <symbol id="i-park" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></symbol>
   <symbol id="i-loc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M4 20c0-9 7-16 16-16 0 9-7 16-16 16z" style="fill:currentColor;stroke:none"/><path d="M4 20l8-8" style="stroke:var(--leaf-cut,var(--bg));stroke-width:2"/></symbol>
+  <symbol id="i-leafo" viewBox="0 0 24 24"><path d="M5 19c0-8.3 6.2-14 14-14 0 7.8-5.7 14-14 14z" style="stroke-width:2.4;stroke-linejoin:round"/><path d="M5 19l7-7" style="stroke-width:2.4"/></symbol>
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
@@ -1160,7 +1183,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261116.1603';
+  var BUILD = '20261117.0155';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1224,6 +1247,11 @@ a.tile.ask:hover { border-color: var(--orange); }
     { key: 'restaurant', label: 'Restaurant', plural: 'Restaurantes', glyph: 'R' },
     { key: 'punto', label: 'Punto ciclista', plural: 'Puntos ciclistas', glyph: 'P' }
   ];
+  // veg: 'vn' = tiene opciones veganas (sirve también a vegetarianos); 'vt' = solo vegetariano
+  var VEG = { vn: { label: 'Opciones veganas', chip: 'Opciones veganas', icon: 'i-leaf' }, vt: { label: 'Vegetariano', chip: 'Vegetariano', icon: 'i-leafo' } };
+  var VEG_SRC = 'Mapa Vegano de @laratavegan e Instagram del local, nov 2026';
+  function vegOk(p, lvl) { return lvl === 'vn' ? p.veg === 'vn' : !!p.veg; }
+  function vegBadge(p) { var v = p.veg && VEG[p.veg]; return v ? '<span class="vg ' + p.veg + '">' + ico(v.icon) + v.label + '</span>' : ''; }
   var PERKS = [
     { key: 'bicis', label: 'Bicicletero' },
     { key: 'taller', label: 'Taller' },
@@ -1234,7 +1262,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   var PLACES = [
 
     {"id":"draga","name":"Draga Coffee","type":"cafe","address":"Huelén 71","comuna":"Providencia","lat":-33.4317,"lng":-70.623,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"felix","name":"Félix Café","type":"cafe","address":"Coyancura 2223, local 8","comuna":"Providencia","lat":-33.42363,"lng":-70.60851,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"felix","name":"Félix Café","type":"cafe","address":"Coyancura 2223, local 8","comuna":"Providencia","lat":-33.42363,"lng":-70.60851,"bicis":"Bici friendly","veg":"vn","vegnota":"Leche vegetal y opciones veganas","src":"Santiago Coffee Lovers 2026"},
     {"id":"singular","name":"Singular Coffee × All4Bikers","type":"cafe","address":"Av. Las Condes 11700, local 102-A","comuna":"Vitacura","lat":-33.379,"lng":-70.5335,"taller":true,"extra":"Tienda y servicio técnico All4Bikers","ruta":"Camino a Farellones y Lo Barnechea","src":"Ridechile feb 2026"},
     {"id":"caramagnola","name":"Caramagnola Bike & Beer","type":"bar","address":"Av. Francisco Bilbao 4471","comuna":"La Reina","lat":-33.4316239,"lng":-70.5795366,"exact":true,"src":"Confirmado por BiciFriendly nov 2026","descuento":"15%"},
     {"id":"elcamino","name":"El Camino Diner","type":"restaurant","address":"Padre Letelier 0203, esq. Los Conquistadores","comuna":"Providencia","lat":-33.4176,"lng":-70.6121,"ruta":"Al pie del acceso Pedro de Valdivia Norte al San Cristóbal","extra":"Recomendado por la comunidad","src":"Comunidad IG nov 2026"},
@@ -1242,10 +1270,10 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"parador","name":"Parador del Ciclista","type":"punto","address":"Camino a Farellones (G-21), antes de Corral Quemado","comuna":"Lo Barnechea","lat":-33.3528532934991,"lng":-70.36875222789324,"exact":true,"ruta":"Parada clásica camino a Farellones","extra":"Meta 1 del Desafío Bci Subaru (nov 2025)","src":"Desafío Bci Subaru nov 2025"},
     {"id":"letelier","name":"Caffè Letelier","type":"cafe","address":"Los Conquistadores 2242","comuna":"Providencia","lat":-33.4179,"lng":-70.6116,"bicis":"Bici a tu lado en la plaza","ruta":"Cerca del acceso Pedro de Valdivia Norte al San Cristóbal","extra":"Picnic en la Plaza Padre Letelier","src":"Comunidad IG nov 2026"},
     {"id":"singularsuecia","name":"Singular Coffee Suecia","type":"cafe","address":"Suecia 161","comuna":"Providencia","lat":-33.4207,"lng":-70.6058,"extra":"Recomendado para la pasada al San Cristóbal","src":"Comunidad IG nov 2026"},
-    {"id":"elephant","name":"The Elephant Coffee","type":"cafe","address":"Napoleón 2868","comuna":"Las Condes","lat":-33.4157,"lng":-70.6022,"extra":"Terraza pet-friendly","src":"Comunidad IG nov 2026"},
+    {"id":"elephant","name":"The Elephant Coffee","type":"cafe","address":"Napoleón 2868","comuna":"Las Condes","lat":-33.4157,"lng":-70.6022,"extra":"Terraza pet-friendly","veg":"vn","vegnota":"Muchas opciones veganas y vegetarianas en la carta","src":"Comunidad IG nov 2026"},
     {"id":"fuentechilenaomnium","name":"Fuente Chilena · Omnium","type":"rapida","address":"Av. Apoquindo 4900, local 110","comuna":"Las Condes","lat":-33.4147,"lng":-70.583,"bicis":"Te reciben con bici en la terraza","src":"Comunidad IG nov 2026"},
     {"id":"fuentechilenapdv","name":"Fuente Chilena · Pedro de Valdivia","type":"rapida","address":"Av. Pedro de Valdivia 0149","comuna":"Providencia","lat":-33.4222,"lng":-70.6136,"bicis":"Bicicletero dentro del local","src":"Comunidad IG nov 2026"},
-    {"id":"elephanthortensias","name":"The Elephant Coffee · Las Hortensias","type":"cafe","address":"Sector Las Hortensias","comuna":"Providencia","lat":-33.4261917,"lng":-70.5942895,"exact":true,"extra":"Segundo local de The Elephant","src":"Comunidad IG nov 2026"},
+    {"id":"elephanthortensias","name":"The Elephant Coffee · Las Hortensias","type":"cafe","address":"Sector Las Hortensias","comuna":"Providencia","lat":-33.4261917,"lng":-70.5942895,"exact":true,"extra":"Segundo local de The Elephant","veg":"vn","vegnota":"Muchas opciones veganas y vegetarianas en la carta","src":"Comunidad IG nov 2026"},
     {"id":"grupeta","name":"La Grupeta Café","type":"cafe","address":"Lo Barnechea (ver ubicación en el mapa)","comuna":"Lo Barnechea","lat":-33.3616891,"lng":-70.5451461,"exact":true,"extra":"Café de ambiente ciclista","src":"Comunidad IG nov 2026"},
     {"id":"pergola","name":"La Pérgola del San Cristóbal","type":"cafe","address":"Parque Metropolitano, Cerro San Cristóbal","comuna":"Recoleta","lat":-33.4243108,"lng":-70.6323121,"exact":true,"ruta":"Parada en la subida al San Cristóbal","src":"Comunidad IG nov 2026"},
     {"id":"rinconciclistas","name":"El Rincón de los Ciclistas","type":"punto","address":"Camino al Volcán (G-25)","comuna":"San José de Maipo","lat":-33.6772507,"lng":-70.3413217,"exact":true,"ruta":"Parada en la ruta al Cajón del Maipo","src":"Comunidad IG nov 2026"},
@@ -1260,11 +1288,11 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"scl-norai","name":"Norai","type":"cafe","address":"Fidel Oteiza 1913","comuna":"Providencia","lat":-33.42607,"lng":-70.61313,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-prensa","name":"Café Prensa","type":"cafe","address":"Triana 847","comuna":"Providencia","lat":-33.43315,"lng":-70.62487,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-draga-coffee-co-roman-diaz","name":"Draga Coffee Co. · Román Díaz","type":"cafe","address":"Román Díaz 56","comuna":"Providencia","lat":-33.43088,"lng":-70.62225,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-ratio-coffee-company","name":"Ratio Coffee Company","type":"cafe","address":"Merced 307","comuna":"Santiago","lat":-33.43711,"lng":-70.64128,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-ratio-coffee-company","name":"Ratio Coffee Company","type":"cafe","address":"Merced 307","comuna":"Santiago","lat":-33.43711,"lng":-70.64128,"bicis":"Bici friendly","veg":"vn","vegnota":"Leche vegetal y pastelería vegana","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-arrayan-cafe","name":"Arrayán Café","type":"cafe","address":"Compañía 2077","comuna":"Santiago","lat":-33.43994,"lng":-70.66583,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-cafe-black-mamba","name":"Café Black Mamba","type":"cafe","address":"Eliodoro Yáñez 1228 L.104","comuna":"Providencia","lat":-33.43351,"lng":-70.61896,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-cafe-black-mamba","name":"Café Black Mamba","type":"cafe","address":"Eliodoro Yáñez 1228 L.104","comuna":"Providencia","lat":-33.43351,"lng":-70.61896,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas, brunch vegano","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-rayo-negro","name":"Café Rayo Negro","type":"cafe","address":"Av. Irarrázaval 1309","comuna":"Ñuñoa","lat":-33.4534,"lng":-70.61726,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-cafe-triciclo","name":"Café Triciclo","type":"cafe","address":"Santo Domingo 598","comuna":"Santiago","lat":-33.43566,"lng":-70.64582,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-cafe-triciclo","name":"Café Triciclo","type":"cafe","address":"Santo Domingo 598","comuna":"Santiago","lat":-33.43566,"lng":-70.64582,"bicis":"Bici friendly","veg":"vn","vegnota":"Productos veganos en la carta","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-coffee-culture-la-paz","name":"Coffee Culture · La Paz","type":"cafe","address":"Av. La Paz 482","comuna":"Independencia","lat":-33.42526,"lng":-70.65145,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-good-cafe","name":"Good Café","type":"cafe","address":"Compañía de Jesús 1230","comuna":"Santiago","lat":-33.43911,"lng":-70.65412,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-quila-cafe","name":"Quila Café","type":"cafe","address":"Av. Pocuro 1821","comuna":"Providencia","lat":-33.43711,"lng":-70.61125,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
@@ -1279,14 +1307,14 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"scl-cafe-altura-manuel-montt","name":"Café Altura · Manuel Montt","type":"cafe","address":"Av. Manuel Montt 053","comuna":"Providencia","lat":-33.42823,"lng":-70.62057,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-altura-mut","name":"Café Altura · MUT","type":"cafe","address":"Mercado Urbano Tobalaba, piso -2","comuna":"Las Condes","lat":-33.41728,"lng":-70.60109,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-altura-moneda","name":"Café Altura · Moneda","type":"cafe","address":"Moneda 877","comuna":"Santiago","lat":-33.44168,"lng":-70.64885,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-cafe-area","name":"Café Área","type":"cafe","address":"Victoria Subercaseaux 295","comuna":"Santiago","lat":-33.43844,"lng":-70.64247,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-cafe-area","name":"Café Área","type":"cafe","address":"Miraflores 419","comuna":"Santiago","lat":-33.43844,"lng":-70.64247,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas dulces y saladas","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-las-donas","name":"Café Las Doñas","type":"cafe","address":"Fray Camilo Henríquez 219","comuna":"Santiago","lat":-33.44499,"lng":-70.63555,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafecito-house","name":"Cafecito House","type":"cafe","address":"Julio Prado 838","comuna":"Providencia","lat":-33.44074,"lng":-70.62249,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-caracol-coffee-house","name":"Caracol Coffee House","type":"cafe","address":"Sancho de la Hoz 3475 L.10","comuna":"Vitacura","lat":-33.40428,"lng":-70.59736,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-coete-cafe-luis-thayer-ojeda","name":"Coete Café · Luis Thayer Ojeda","type":"cafe","address":"Av. Luis Thayer Ojeda 139","comuna":"Providencia","lat":-33.4179,"lng":-70.60371,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-el-galgo-cafe","name":"El Galgo Café","type":"cafe","address":"Av. Providencia 2035","comuna":"Providencia","lat":-33.4233,"lng":-70.61176,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-espresshood","name":"EspressHood","type":"cafe","address":"Ayacucho 473","comuna":"Santiago","lat":-33.43708,"lng":-70.64639,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-la-loba-cafe","name":"La Loba Café","type":"cafe","address":"Diagonal Rancagua 980","comuna":"Providencia","lat":-33.43974,"lng":-70.62043,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-la-loba-cafe","name":"La Loba Café","type":"cafe","address":"Diagonal Rancagua 980","comuna":"Providencia","lat":-33.43974,"lng":-70.62043,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-atha-coffee","name":"Atha Coffee","type":"cafe","address":"Miraflores 419","comuna":"Santiago","lat":-33.43759,"lng":-70.64558,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-oli-cafe","name":"Oli Café","type":"cafe","address":"Huérfanos 3044","comuna":"Santiago","lat":-33.44246,"lng":-70.67695,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"caramagnolahda","name":"Pizzería Caramagnola · Hernando de Aguirre","type":"restaurant","address":"Hernando de Aguirre","comuna":"Providencia","lat":-33.4357939,"lng":-70.5951846,"exact":true,"extra":"Otro local de Caramagnola","src":"Comunidad nov 2026"},
@@ -1295,13 +1323,13 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"litbalm","name":"Café Literario Balmaceda","type":"cafe","address":"Parque Balmaceda, a la altura de Condell","comuna":"Providencia","lat":-33.432,"lng":-70.6262,"ciclovia":"Parque Balmaceda","src":"Confirmado por BiciFriendly nov 2026"},
     {"id":"labici","name":"Café la Bicicleta","type":"cafe","address":"Av. Pocuro 3091","comuna":"Providencia","lat":-33.4302,"lng":-70.5996,"taller":true,"ciclovia":"Pocuro","src":"Confirmado por BiciFriendly nov 2026"},
     {"id":"bikecostanera","name":"Bike Costanera","type":"punto","address":"Av. Andrés Bello 2425, acceso lateral","comuna":"Providencia","lat":-33.417,"lng":-70.607,"bicis":"Más de 800 estacionamientos","extra":"Duchas, lockers y herramientas","src":"Confirmado por BiciFriendly nov 2026"},
-    {"id":"dabruno","name":"Pizzería Da Bruno","type":"rapida","address":"Triana 857, Barrio Triana","comuna":"Providencia","lat":-33.4335574,"lng":-70.6248163,"exact":true,"bicis":"Bicicletero seguro","extra":"Pizza napolitana al paso","src":"Comunidad IG nov 2026"},
-    {"id":"olympia","name":"Olympia Frozen Yogurt","type":"cafe","address":"General Salvo 20","comuna":"Providencia","lat":-33.4332585,"lng":-70.6254437,"exact":true,"bicis":"Bicicletero seguro","extra":"Heladería de yogurt griego, a pasos de metro Salvador","src":"Comunidad IG nov 2026"},
+    {"id":"dabruno","name":"Pizzería Da Bruno","type":"rapida","address":"Triana 857, Barrio Triana","comuna":"Providencia","lat":-33.4335574,"lng":-70.6248163,"exact":true,"bicis":"Bicicletero seguro","extra":"Pizza napolitana al paso","veg":"vn","vegnota":"Opciones veganas","src":"Comunidad IG nov 2026"},
+    {"id":"olympia","name":"Olympia Frozen Yogurt","type":"cafe","address":"General Salvo 20","comuna":"Providencia","lat":-33.4332585,"lng":-70.6254437,"exact":true,"bicis":"Bicicletero seguro","extra":"Heladería de yogurt griego, a pasos de metro Salvador","veg":"vn","vegnota":"Frozen yogurt vegano","src":"Comunidad IG nov 2026"},
     {"id":"bluebird","name":"Blue Bird Café Vitacura","type":"cafe","address":"Av. Bicentenario 3883, local 3","comuna":"Vitacura","lat":-33.3982607,"lng":-70.6003616,"exact":true,"bicis":"Bicicletero","src":"Confirmado por BiciFriendly nov 2026"}
   ];
 
 
-  var state = { type: 'all', q: '', perks: {}, sel: null, me: null, savedOnly: false };
+  var state = { type: 'all', q: '', perks: {}, veg: '', sel: null, me: null, savedOnly: false };
   // Valoraciones: null = cargando (skeleton), false = no disponibles, objeto = listas.
   var RATINGS = (CONFIG.resumenCsvUrl || CONFIG.registroUrl) && window.fetch ? null : {};
   // Valorar en la misma ficha: va a la aplicación web del registro (valoraciones.gs).
@@ -1379,6 +1407,7 @@ a.tile.ask:hover { border-color: var(--orange); }
       if (state.savedOnly && !saved[p.id]) return false;
       if (state.type !== 'all' && p.type !== state.type) return false;
       for (var k in state.perks) if (state.perks[k] && !p[k]) return false;
+      if (state.veg && !vegOk(p, state.veg)) return false;
       if (qq && norm(p.name + ' ' + p.address + ' ' + p.comuna).indexOf(qq) === -1) return false;
       return true;
     });
@@ -1437,6 +1466,13 @@ a.tile.ask:hover { border-color: var(--orange); }
       var n = PLACES.filter(function (p) { return p.type === t.key; }).length;
       h += '<button type="button" class="chip t-' + t.key + '" data-type="' + t.key + '" aria-pressed="' + (state.type === t.key) + '"><span class="gl" aria-hidden="true"></span>' + t.plural + ' <span class="n">' + n + '</span></button>';
     });
+    var nVn = PLACES.filter(function (p) { return vegOk(p, 'vn'); }).length, nVt = PLACES.filter(function (p) { return vegOk(p, 'vt'); }).length;
+    if (nVt) {
+      h += '<span class="sep" aria-hidden="true"></span>';
+      // El chip Vegetariano solo aparece si hay lugares solo vegetarianos (si no, mostraría lo mismo que Vegano)
+      if (nVt > nVn) h += '<button type="button" class="chip" data-veg="vt" aria-pressed="' + (state.veg === 'vt') + '"><span class="ic2" aria-hidden="true">' + ico('i-leafo') + '</span>Vegetariano <span class="n">' + nVt + '</span></button>';
+      if (nVn) h += '<button type="button" class="chip" data-veg="vn" aria-pressed="' + (state.veg === 'vn') + '"><span class="ic2" aria-hidden="true">' + ico('i-leaf') + '</span>Opciones veganas <span class="n">' + nVn + '</span></button>';
+    }
     h += '<span class="sep" aria-hidden="true"></span><span class="lbl">Para ciclistas</span>';
     PERKS.filter(function (k) { return PLACES.some(function (p) { return p[k.key]; }); }).forEach(function (k) { h += '<button type="button" class="chip" data-perk="' + k.key + '" aria-pressed="' + !!state.perks[k.key] + '">' + k.label + '</button>'; });
     $('filters').innerHTML = h;
@@ -1468,7 +1504,7 @@ a.tile.ask:hover { border-color: var(--orange); }
       return '<li class="row t-' + p.type + '" id="row-' + p.id + '" aria-current="' + (state.sel === p.id) + '">' +
         '<a class="pick" href="#' + p.id + '" data-pick="' + p.id + '">' + plate +
         '<span class="info"><span class="name">' + esc(p.name) + '</span>' +
-        '<span class="meta"><span class="kind">' + t.label + '</span>, ' + esc(p.comuna) + (dp ? ', <span class="bike-min">' + bikeMin(p) + ' min en bici</span>' : '') + '</span>' + perkLine(p) + rate + '</span>' + kmc +
+        '<span class="meta"><span class="kind">' + t.label + '</span>, ' + esc(p.comuna) + (dp ? ', <span class="bike-min">' + bikeMin(p) + ' min en bici</span>' : '') + '</span>' + vegBadge(p) + perkLine(p) + rate + '</span>' + kmc +
         (saved[p.id] ? '<svg class="i saved-dot" role="img" aria-label="Guardado"><use href="#i-save"/></svg>' : '') +
         '<svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></a></li>';
     }).join('');
@@ -1501,10 +1537,11 @@ a.tile.ask:hover { border-color: var(--orange); }
     function ask(txt) { return sug ? '<a class="tile ask" data-ev="sugerir" data-id="' + p.id + '" href="' + sug + '" target="_blank" rel="noopener"><span class="txt">' + txt + '</span><span class="cta">Cuéntanos</span></a>' : ''; }
     if (!p.bicis) tiles.push(ask('¿Tiene bicicletero?'));
     if (!p.descuento) tiles.push(ask('¿Hay descuento para ciclistas?'));
+    var veg = p.veg ? '<h3>Comida veggie</h3><div class="tiles"><div class="tile vtile">' + ico(VEG[p.veg].icon) + '<span class="txt">' + esc(p.vegnota || (p.veg === 'vn' ? 'Tiene opciones veganas' : 'Tiene opciones vegetarianas')) + '</span><small>' + esc(VEG_SRC) + '</small></div></div>' : '';
     var btns = mobile ? '' : '<div class="fx-btns">' + saveBtn(p) + '<button type="button" class="iconbtn" data-close="1" aria-label="Cerrar ficha">' + ico('i-x') + '</button></div>';
     return '<div class="fx t-' + p.type + '">' + btns +
-      '<div class="fx-top"><span class="fx-kind">' + kind + '</span><h2 class="fx-name"' + (mobile ? ' id="dtName"' : '') + '>' + esc(p.name) + '</h2>' + dist + '</div>' +
-      '<span class="fx-addr">' + esc(p.address) + '</span>' + perk + rate + '<h3>Para ciclistas</h3><div class="tiles">' + tiles.join('') + '</div>' + commentsHtml(p) + voteHtml(p) +
+      '<div class="fx-top"><span class="fx-kind">' + kind + '</span>' + vegBadge(p) + '<h2 class="fx-name"' + (mobile ? ' id="dtName"' : '') + '>' + esc(p.name) + '</h2>' + dist + '</div>' +
+      '<span class="fx-addr">' + esc(p.address) + '</span>' + perk + rate + '<h3>Para ciclistas</h3><div class="tiles">' + tiles.join('') + '</div>' + veg + commentsHtml(p) + voteHtml(p) +
       (placeCount(p) ? '<span class="fx-count">' + ico('i-bike') + fmtN(placeCount(p)) + (placeCount(p) === 1 ? ' ciclista abrió' : ' ciclistas abrieron') + ' la ruta en bici desde BiciFriendly</span>' : '') +
       '<span class="fx-src">' + (p.src ? 'Fuente: ' + esc(p.src) + ', por verificar en terreno' : 'Sin fuente de datos ciclistas todavía') + '</span>' +
       (mobile ? '' : goHtml(p)) + '</div>';
@@ -1801,13 +1838,14 @@ a.tile.ask:hover { border-color: var(--orange); }
   $('filters').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     if (b.dataset.type) { state.type = b.dataset.type; track('filtro', '', 'tipo:' + b.dataset.type); }
+    if (b.dataset.veg) { state.veg = state.veg === b.dataset.veg ? '' : b.dataset.veg; if (state.veg) track('filtro', '', 'veg:' + state.veg); }
     if (b.dataset.perk) { state.perks[b.dataset.perk] = !state.perks[b.dataset.perk]; if (state.perks[b.dataset.perk]) track('filtro', '', b.dataset.perk); }
     refresh(true);
   });
   $('list').addEventListener('click', function (e) {
     var a = e.target.closest('[data-pick]');
     if (a) { e.preventDefault(); select(a.dataset.pick); return; }
-    if (e.target.id === 'reset') { state.type = 'all'; state.perks = {}; state.q = ''; state.savedOnly = false; $('q').value = ''; refresh(true); }
+    if (e.target.id === 'reset') { state.type = 'all'; state.perks = {}; state.veg = ''; state.q = ''; state.savedOnly = false; $('q').value = ''; refresh(true); }
     if (e.target.id === 'goExplore') { state.savedOnly = false; refresh(true); }
   });
   document.addEventListener('click', function (e) {
