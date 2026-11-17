@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-HOdO3BGPN+iCKPNR/zYrFyN1epB2y70A6lnLtrskC7k=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-ffsuZI6jPxOoa30TH7jgzkPGqzXl4P9HABpaKlH1Bvg=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -848,8 +848,61 @@ a.chip { text-decoration: none; }
 .search input::placeholder { color: var(--ph); opacity: 1; }
 .actions { display: flex; gap: 8px; margin-left: auto; }
 .locmsg { flex-basis: 100%; margin: 0; font-size: 14px; color: var(--or-text); font-weight: 700; }
-.filters { display: flex; align-items: center; gap: 8px; padding: 0 28px 16px; overflow-x: auto; scrollbar-width: none; }
-.filters::-webkit-scrollbar { display: none; }
+.filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 0 28px 16px; }
+/* Tipo de lugar: control segmentado (se elige uno) */
+.seg { display: flex; flex: none; border: 2px solid var(--field-line); }
+.seg button, .fs-seg button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 2px 14px 0; border: 0; background: var(--bg); color: var(--ink); font: 800 14px var(--body); white-space: nowrap; cursor: pointer; }
+.seg button + button { border-left: 2px solid var(--field-line); }
+.seg button[aria-checked="true"], .fs-seg button[aria-checked="true"] { background: var(--ink); color: var(--bg); }
+.seg button:hover:not([aria-checked="true"]):not(:disabled), .fs-seg button:hover:not([aria-checked="true"]):not(:disabled) { background: var(--hover); }
+.seg .n, .fs-seg .n { font-weight: 600; opacity: .75; font-variant-numeric: tabular-nums; }
+.seg button:focus-visible, .fs-seg button:focus-visible, .fs-row:focus-visible { outline: 3px solid var(--orange); outline-offset: -3px; }
+.vsep { flex: none; width: 2px; height: 32px; margin: 0 4px; background: var(--line); }
+/* Filtros combinables: + apagado, ✓ encendido */
+.chip .pm { width: 16px; height: 16px; stroke-width: 2.6; }
+.chip[aria-pressed="true"] .pm { color: var(--orange); stroke-width: 3.2; }
+.chip .lf { width: 14px; height: 14px; color: var(--gD); --leaf-cut: var(--bg); }
+html:not([data-theme="light"]) .chip .lf { color: var(--gL); }
+.chip[aria-pressed="true"] .lf { color: var(--gL); --leaf-cut: var(--ink); }
+html[data-theme="light"] .chip[aria-pressed="true"] .lf { color: var(--gL); }
+.chip:disabled, .seg button:disabled, .fs-seg button:disabled, .fs-row:disabled { opacity: .4; cursor: not-allowed; }
+.chip:disabled:hover { background: var(--bg); }
+.chip.clear { border-color: transparent; background: transparent; color: var(--or-text); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; padding: 2px 6px 0; }
+.chip.clear:hover { background: transparent; color: var(--ink); }
+.chip.fbtn { display: none; font-weight: 800; }
+.fbtn .badge { min-width: 20px; height: 20px; padding-top: 2px; display: inline-grid; place-items: center; background: var(--orange); color: #000; font-size: 12px; font-weight: 800; }
+.chip.fbtn.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+@media (min-width: 821px) {
+  .filters .chip, .seg button { padding: 2px 10px 0; gap: 6px; }
+  .filters { gap: 6px; }
+  .filters .vsep { margin: 0 2px; }
+}
+/* Panel de filtros (celular) */
+.fsheet { position: fixed; inset: 0; z-index: 1400; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(0,0,0,.5); }
+.fsheet[hidden] { display: none; }
+.fs-back { flex: 1; border: 0; background: transparent; cursor: pointer; }
+.fs-panel { max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); color: var(--ink); border-top: 4px solid var(--orange); padding: 20px 16px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 20px; }
+.fs-head { display: flex; align-items: center; justify-content: space-between; }
+.fs-head h2 { margin: 0; font: 800 20px/1.1 var(--display); letter-spacing: -0.03em; }
+.fs-head .iconbtn { background: var(--bg); border: 2px solid var(--rule); }
+.fs-panel fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.fs-panel legend { padding: 0 0 8px; font-size: 14px; font-weight: 800; }
+.fs-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 2px solid var(--field-line); }
+.fs-seg button { min-height: 48px; }
+.fs-seg button:nth-child(odd) { border-right: 2px solid var(--field-line); }
+.fs-seg button:nth-child(-n+2) { border-bottom: 2px solid var(--field-line); }
+.fs-row { width: 100%; min-height: 52px; display: flex; align-items: center; gap: 12px; padding: 2px 0 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); font: 700 16px var(--body); text-align: left; cursor: pointer; }
+.fs-row .box { width: 24px; height: 24px; flex: none; display: grid; place-items: center; border: 2px solid var(--field-line); background: var(--bg); }
+.fs-row[aria-checked="true"] .box { background: var(--ink); border-color: var(--ink); }
+.fs-row .box svg { width: 16px; height: 16px; color: var(--orange); stroke-width: 3.2; }
+.fs-row .lbl2 { flex: 1; display: inline-flex; align-items: center; gap: 8px; }
+.fs-row .lf { width: 16px; height: 16px; color: var(--gD); --leaf-cut: var(--bg); }
+html:not([data-theme="light"]) .fs-row .lf { color: var(--gL); }
+.fs-row .n { font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fs-foot { display: flex; align-items: center; gap: 12px; }
+.fs-foot .clear2 { min-height: 52px; padding: 2px 12px 0; border: 0; background: transparent; color: var(--or-text); font: 800 15px var(--body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.fs-foot .clear2:disabled { color: var(--dim); text-decoration: none; cursor: not-allowed; }
+.fs-foot .go { flex: 1; }
 .filters .sep { flex: none; width: 12px; }
 .filters .lbl { flex: none; font-size: 14px; color: var(--muted); }
 
@@ -1059,7 +1112,10 @@ a.tile.ask:hover { border-color: var(--orange); }
   .search input { font-size: 16px; }
   .actions .chip { display: none; }
   .actions .iconbtn.m { display: grid; }
-  .filters { padding: 0 16px 12px; gap: 6px; }
+  .filters { padding: 0 16px 12px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filters .seg, .filters .vsep, .filters .tg:not(.q) { display: none; }
+  .chip.fbtn { display: inline-flex; }
   .filters .chip { min-height: 40px; font-size: 14px; padding: 2px 10px 0; }
   .card { display: none !important; }
   .body { display: block; }
@@ -1112,6 +1168,10 @@ a.tile.ask:hover { border-color: var(--orange); }
   <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16a8 8 0 0 0 0-16z" style="fill:currentColor"/></symbol>
 </svg>
 
+<div class="fsheet" id="fsheet" hidden>
+  <button type="button" class="fs-back" data-close="f" aria-label="Cerrar filtros" tabindex="-1"></button>
+  <div class="fs-panel" role="dialog" aria-modal="true" aria-labelledby="fsTitle" id="fsPanel"></div>
+</div>
 <div class="app">
   <header class="top">
     <div class="bar">
@@ -1183,7 +1243,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261117.0155';
+  var BUILD = '20261117.0207';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1248,17 +1308,28 @@ a.tile.ask:hover { border-color: var(--orange); }
     { key: 'punto', label: 'Punto ciclista', plural: 'Puntos ciclistas', glyph: 'P' }
   ];
   // veg: 'vn' = tiene opciones veganas (sirve también a vegetarianos); 'vt' = solo vegetariano
+  // Tipo de lugar en el filtro: bares, comida rápida y restaurantes se agrupan en «Comida»
+  var GROUPS = [
+    { key: 'all', label: 'Todos' },
+    { key: 'cafe', label: 'Cafés', types: ['cafe'] },
+    { key: 'comida', label: 'Comida', types: ['bar', 'rapida', 'restaurant'] },
+    { key: 'punto', label: 'Puntos ciclistas', types: ['punto'] }
+  ];
+  var groupBy = {}; GROUPS.forEach(function (g) { groupBy[g.key] = g; });
   var VEG = { vn: { label: 'Opciones veganas', chip: 'Opciones veganas', icon: 'i-leaf' }, vt: { label: 'Vegetariano', chip: 'Vegetariano', icon: 'i-leafo' } };
   var VEG_SRC = 'Mapa Vegano de @laratavegan e Instagram del local, nov 2026';
   function vegOk(p, lvl) { return lvl === 'vn' ? p.veg === 'vn' : !!p.veg; }
   function vegBadge(p) { var v = p.veg && VEG[p.veg]; return v ? '<span class="vg ' + p.veg + '">' + ico(v.icon) + v.label + '</span>' : ''; }
+  // Filtros combinables, en orden de prioridad; los dos primeros quedan a la vista en el celular
   var PERKS = [
-    { key: 'bicis', label: 'Bicicletero' },
+    { key: 'bicis', label: 'Bicicletero', quick: true },
+    { key: 'veg', label: 'Opciones veganas', quick: true, icon: 'i-leaf', test: function (p) { return p.veg === 'vn'; } },
     { key: 'taller', label: 'Taller' },
-    { key: 'descuento', label: 'Descuento' },
     { key: 'ciclovia', label: 'Ciclovía cerca' },
-    { key: 'ruta', label: 'Parada de ruta' }
+    { key: 'ruta', label: 'Parada de ruta' },
+    { key: 'descuento', label: 'Descuento' }
   ];
+  function has(p, k) { return k.test ? k.test(p) : !!p[k.key]; }
   var PLACES = [
 
     {"id":"draga","name":"Draga Coffee","type":"cafe","address":"Huelén 71","comuna":"Providencia","lat":-33.4317,"lng":-70.623,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
@@ -1329,7 +1400,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   ];
 
 
-  var state = { type: 'all', q: '', perks: {}, veg: '', sel: null, me: null, savedOnly: false };
+  var state = { type: 'all', q: '', perks: {}, sel: null, me: null, savedOnly: false };
   // Valoraciones: null = cargando (skeleton), false = no disponibles, objeto = listas.
   var RATINGS = (CONFIG.resumenCsvUrl || CONFIG.registroUrl) && window.fetch ? null : {};
   // Valorar en la misma ficha: va a la aplicación web del registro (valoraciones.gs).
@@ -1401,16 +1472,18 @@ a.tile.ask:hover { border-color: var(--orange); }
     var d = km(p); if (d === null) return null;
     return d < 1 ? [String(Math.max(10, Math.round(d * 100) * 10)), 'metros'] : [d < 10 ? d.toFixed(1).replace('.', ',') : String(Math.round(d)), 'km'];
   }
+  function matches(p, type, perks, qq) {
+    if (state.savedOnly && !saved[p.id]) return false;
+    if (type !== 'all' && groupBy[type].types.indexOf(p.type) === -1) return false;
+    for (var i = 0; i < PERKS.length; i++) if (perks[PERKS[i].key] && !has(p, PERKS[i])) return false;
+    if (qq && norm(p.name + ' ' + p.address + ' ' + p.comuna).indexOf(qq) === -1) return false;
+    return true;
+  }
+  function countWith(type, perks) { var qq = norm(state.q.trim()), n = 0; PLACES.forEach(function (p) { if (matches(p, type, perks, qq)) n++; }); return n; }
+  function activeCount() { return (state.type !== 'all' ? 1 : 0) + PERKS.filter(function (k) { return state.perks[k.key]; }).length; }
   function visible() {
     var qq = norm(state.q.trim());
-    var out = PLACES.filter(function (p) {
-      if (state.savedOnly && !saved[p.id]) return false;
-      if (state.type !== 'all' && p.type !== state.type) return false;
-      for (var k in state.perks) if (state.perks[k] && !p[k]) return false;
-      if (state.veg && !vegOk(p, state.veg)) return false;
-      if (qq && norm(p.name + ' ' + p.address + ' ' + p.comuna).indexOf(qq) === -1) return false;
-      return true;
-    });
+    var out = PLACES.filter(function (p) { return matches(p, state.type, state.perks, qq); });
     if (state.me) out.sort(function (a, b) { return km(a) - km(b); });
     return out;
   }
@@ -1460,25 +1533,48 @@ a.tile.ask:hover { border-color: var(--orange); }
   function bikeMin(p) { var d = km(p); return d === null ? null : Math.max(1, Math.round(d * 1.3 / 15 * 60)); }
 
   // ---------- Filtros ----------
-  function renderFilters() {
-    var h = '<button type="button" class="chip" data-type="all" aria-pressed="' + (state.type === 'all') + '">Todos <span class="n">' + PLACES.length + '</span></button>';
-    TYPES.forEach(function (t) {
-      var n = PLACES.filter(function (p) { return p.type === t.key; }).length;
-      h += '<button type="button" class="chip t-' + t.key + '" data-type="' + t.key + '" aria-pressed="' + (state.type === t.key) + '"><span class="gl" aria-hidden="true"></span>' + t.plural + ' <span class="n">' + n + '</span></button>';
+  function filterModel() {
+    var types = GROUPS.map(function (g) { var n = countWith(g.key, state.perks); return { g: g, n: n, on: state.type === g.key, dis: state.type !== g.key && n === 0 }; });
+    var perks = PERKS.filter(function (k) { return PLACES.some(function (p) { return has(p, k); }); }).map(function (k) {
+      var on = !!state.perks[k.key], next = {}; for (var x in state.perks) next[x] = state.perks[x]; next[k.key] = true;
+      var n = countWith(state.type, next); return { k: k, n: n, on: on, dis: !on && n === 0 };
     });
-    var nVn = PLACES.filter(function (p) { return vegOk(p, 'vn'); }).length, nVt = PLACES.filter(function (p) { return vegOk(p, 'vt'); }).length;
-    if (nVt) {
-      h += '<span class="sep" aria-hidden="true"></span>';
-      // El chip Vegetariano solo aparece si hay lugares solo vegetarianos (si no, mostraría lo mismo que Vegano)
-      if (nVt > nVn) h += '<button type="button" class="chip" data-veg="vt" aria-pressed="' + (state.veg === 'vt') + '"><span class="ic2" aria-hidden="true">' + ico('i-leafo') + '</span>Vegetariano <span class="n">' + nVt + '</span></button>';
-      if (nVn) h += '<button type="button" class="chip" data-veg="vn" aria-pressed="' + (state.veg === 'vn') + '"><span class="ic2" aria-hidden="true">' + ico('i-leaf') + '</span>Opciones veganas <span class="n">' + nVn + '</span></button>';
-    }
-    h += '<span class="sep" aria-hidden="true"></span><span class="lbl">Para ciclistas</span>';
-    PERKS.filter(function (k) { return PLACES.some(function (p) { return p[k.key]; }); }).forEach(function (k) { h += '<button type="button" class="chip" data-perk="' + k.key + '" aria-pressed="' + !!state.perks[k.key] + '">' + k.label + '</button>'; });
+    return { types: types, perks: perks, active: activeCount() };
+  }
+  var PLUS = '<svg class="i pm" aria-hidden="true"><use href="#i-plus"/></svg>', CHECK = '<svg class="i pm" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>';
+  function renderFilters() {
+    var m = filterModel(), h = '';
+    h += '<button type="button" class="chip fbtn' + (m.active ? ' on' : '') + '" data-open="f" aria-haspopup="dialog" aria-controls="fsheet"><svg class="i" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Filtros' + (m.active ? '<span class="badge"><span class="vh">, activos: </span>' + m.active + '</span>' : '') + '</button>';
+    h += '<div class="seg" role="radiogroup" aria-label="Tipo de lugar">' + m.types.map(function (o) {
+      return '<button type="button" role="radio" data-type="' + o.g.key + '" aria-checked="' + o.on + '"' + (o.dis ? ' disabled' : '') + '>' + o.g.label + ' <span class="n">' + o.n + '</span></button>';
+    }).join('') + '</div><span class="vsep" aria-hidden="true"></span>';
+    // En la barra se ocultan los que dejarían 0 resultados (en el panel del celular quedan desactivados)
+    h += m.perks.filter(function (o) { return !o.dis; }).map(function (o) {
+      return '<button type="button" class="chip tg' + (o.k.quick ? ' q' : '') + '" data-perk="' + o.k.key + '" aria-pressed="' + o.on + '"' + (o.dis ? ' disabled' : '') + '>' + (o.on ? CHECK : PLUS) +
+        (o.k.icon ? '<svg class="i lf" aria-hidden="true"><use href="#' + o.k.icon + '"/></svg>' : '') + o.k.label + (o.on ? '' : ' <span class="n">' + o.n + '</span>') + '</button>';
+    }).join('');
+    if (m.active) h += '<button type="button" class="chip clear" data-clear="1">Limpiar' + (m.active > 1 ? ' (' + m.active + ')' : '') + '</button>';
     $('filters').innerHTML = h;
+    if (!$('fsheet').hidden) renderSheet(m);
     document.querySelectorAll('.savedBtn').forEach(function (b) { b.setAttribute('aria-pressed', String(state.savedOnly)); });
     $('tabExplore').setAttribute('aria-pressed', String(!state.savedOnly));
   }
+  function renderSheet(m) {
+    m = m || filterModel(); var n = visible().length;
+    $('fsPanel').innerHTML = '<div class="fs-head"><h2 id="fsTitle">Filtros</h2><button type="button" class="iconbtn" data-close="f" aria-label="Cerrar filtros">' + ico('i-x') + '</button></div>' +
+      '<fieldset><legend>Tipo de lugar</legend><div class="fs-seg" role="radiogroup" aria-label="Tipo de lugar">' + m.types.map(function (o) {
+        return '<button type="button" role="radio" data-type="' + o.g.key + '" aria-checked="' + o.on + '"' + (o.dis ? ' disabled' : '') + '>' + o.g.label + ' <span class="n">' + o.n + '</span></button>';
+      }).join('') + '</div></fieldset>' +
+      '<fieldset><legend>Que tenga</legend>' + m.perks.map(function (o) {
+        return '<button type="button" class="fs-row" role="checkbox" data-perk="' + o.k.key + '" aria-checked="' + o.on + '"' + (o.dis ? ' disabled' : '') + '><span class="box" aria-hidden="true">' + (o.on ? CHECK : '') + '</span>' +
+          '<span class="lbl2">' + (o.k.icon ? '<svg class="i lf" aria-hidden="true"><use href="#' + o.k.icon + '"/></svg>' : '') + o.k.label + '</span><span class="n">' + (o.on ? '' : o.n) + '</span></button>';
+      }).join('') + '</fieldset>' +
+      '<div class="fs-foot"><button type="button" class="clear2" data-clear="1"' + (m.active ? '' : ' disabled') + '>Limpiar</button>' +
+      '<button type="button" class="go main" data-close="f">' + (n ? 'Ver ' + n + (n === 1 ? ' lugar' : ' lugares') : 'Sin resultados') + '</button></div>';
+  }
+  var fsReturn = null;
+  function openSheet() { fsReturn = document.activeElement; $('fsheet').hidden = false; renderSheet(); try { document.body.style.overflow = 'hidden'; } catch (e) {} var c = $('fsPanel').querySelector('[data-close]'); if (c) c.focus(); track('filtros_panel'); }
+  function closeSheet() { if ($('fsheet').hidden) return; $('fsheet').hidden = true; document.body.style.overflow = ''; var b = document.querySelector('.fbtn'); if (b) b.focus(); else if (fsReturn) try { fsReturn.focus(); } catch (e) {} }
 
   // ---------- Lista ----------
   function renderList() {
@@ -1835,17 +1931,32 @@ a.tile.ask:hover { border-color: var(--orange); }
 
   // ---------- Eventos ----------
   function refresh(fit) { renderFilters(); renderList(); syncMarkers(fit); highlight(); }
-  $('filters').addEventListener('click', function (e) {
-    var b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.type) { state.type = b.dataset.type; track('filtro', '', 'tipo:' + b.dataset.type); }
-    if (b.dataset.veg) { state.veg = state.veg === b.dataset.veg ? '' : b.dataset.veg; if (state.veg) track('filtro', '', 'veg:' + state.veg); }
-    if (b.dataset.perk) { state.perks[b.dataset.perk] = !state.perks[b.dataset.perk]; if (state.perks[b.dataset.perk]) track('filtro', '', b.dataset.perk); }
+  function onFilterClick(e) {
+    var b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.open) { openSheet(); return; }
+    if (b.dataset.close) { closeSheet(); return; }
+    if (b.dataset.clear) { state.type = 'all'; state.perks = {}; track('filtro', '', 'limpiar'); }
+    else if (b.dataset.type) { state.type = b.dataset.type; track('filtro', '', 'tipo:' + b.dataset.type); }
+    else if (b.dataset.perk) { state.perks[b.dataset.perk] = !state.perks[b.dataset.perk]; if (state.perks[b.dataset.perk]) track('filtro', '', b.dataset.perk); }
+    else return;
+    var keep = b.closest('#fsheet') ? (b.dataset.perk ? '[data-perk="' + b.dataset.perk + '"]' : b.dataset.type ? '[data-type="' + b.dataset.type + '"]' : '.clear2') : null;
     refresh(true);
+    if (keep) { var el = $('fsPanel').querySelector(keep); if (el && !el.disabled) el.focus(); else { var c = $('fsPanel').querySelector('[data-close]'); if (c) c.focus(); } }
+  }
+  $('filters').addEventListener('click', onFilterClick);
+  $('fsheet').addEventListener('click', onFilterClick);
+  $('fsheet').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.stopPropagation(); closeSheet(); return; }
+    if (e.key !== 'Tab') return;
+    var f = [].slice.call($('fsPanel').querySelectorAll('button:not(:disabled)')); if (!f.length) return;
+    if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
   });
+  if (mq && mq.addEventListener) mq.addEventListener('change', function () { if (!isMobile()) closeSheet(); });
   $('list').addEventListener('click', function (e) {
     var a = e.target.closest('[data-pick]');
     if (a) { e.preventDefault(); select(a.dataset.pick); return; }
-    if (e.target.id === 'reset') { state.type = 'all'; state.perks = {}; state.veg = ''; state.q = ''; state.savedOnly = false; $('q').value = ''; refresh(true); }
+    if (e.target.id === 'reset') { state.type = 'all'; state.perks = {}; state.q = ''; state.savedOnly = false; $('q').value = ''; refresh(true); }
     if (e.target.id === 'goExplore') { state.savedOnly = false; refresh(true); }
   });
   document.addEventListener('click', function (e) {
@@ -1891,7 +2002,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     });
   });
   var qt;
-  $('q').addEventListener('input', function (e) { state.q = e.target.value; clearTimeout(qt); qt = setTimeout(function () { renderList(); syncMarkers(true); }, 120);
+  $('q').addEventListener('input', function (e) { state.q = e.target.value; clearTimeout(qt); qt = setTimeout(function () { renderFilters(); renderList(); syncMarkers(true); }, 120);
     clearTimeout(qtt); var qv = e.target.value.trim(); if (qv.length >= 3) qtt = setTimeout(function () { track('buscar', '', qv); }, 1500); });
   var qtt;
   $('q').addEventListener('focus', function () { if (isMobile() && snap !== 'full') setSnap('full'); });
