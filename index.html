@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-t2DHzL7oegmgWTToQll7x/KFJXr5rRJOHkZsYXcBPk4=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DFUSUeFlS1SmyvpIH6sJL6z8Si2jtmoAiXSZnq5NI+w=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-2+4DMt4UBNFZIYE4hXVTMOHZSK8kp9yYo/qP68doKds=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -13,6 +13,13 @@
   if (pref !== 'light' && pref !== 'dark') pref = 'auto';
   var h = new Date().getHours(); var t = pref === 'auto' ? (h >= 7 && h < 20 ? 'light' : 'dark') : pref;
   document.documentElement.setAttribute('data-theme', t); })();
+// Entrada animada: una vez por visita y nunca con «reducir movimiento». No tapa nada: la página se usa desde el primer instante.
+(function () { try {
+  if (sessionStorage.getItem('bf-entrada') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  sessionStorage.setItem('bf-entrada', '1');
+  var d = document.documentElement; d.classList.add('bf-enter');
+  setTimeout(function () { d.classList.remove('bf-enter'); }, 1600);
+} catch (e) {} })();
 </script>
 <script>
 // Captura temprana de errores: se guardan hasta que el script principal pueda reportarlos.
@@ -837,6 +844,17 @@ a.chip { text-decoration: none; }
 /* ---------- Estructura ---------- */
 .app { height: 100%; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); }
 .top, .body, .filters, .bar { min-width: 0; }
+/* ---------- Entrada (una vez por visita) ---------- */
+.bf-bike { position: absolute; left: 0; bottom: -13px; width: 40px; height: 25px; color: var(--ink); pointer-events: none; opacity: 0; }
+@keyframes bfRide { 0% { transform: translateX(-60px); opacity: 1; } 96% { transform: translateX(calc(100vw + 20px)); opacity: 1; } 100% { transform: translateX(calc(100vw + 20px)); opacity: 0; } }
+@keyframes bfLane { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes bfWord { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.brand span, .brand em { display: inline-block; }
+html.bf-enter .bf-bike { animation: bfRide 760ms cubic-bezier(.45, 0, .25, 1) 60ms both; }
+html.bf-enter .sheet::before { transform-origin: top center; animation: bfLane 300ms cubic-bezier(.6, 0, .2, 1) both; }
+html.bf-enter .brand > span { animation: bfWord 260ms ease-out 300ms both; }
+html.bf-enter .brand em { animation: bfWord 260ms ease-out 420ms both; }
+@media (prefers-reduced-motion: reduce) { html.bf-enter .bf-bike, html.bf-enter .sheet::before, html.bf-enter .brand > span, html.bf-enter .brand em { animation: none; } }
 .top { position: relative; z-index: 600; background: var(--bg); border-bottom: 2px solid var(--rule); }
 .bar { display: flex; align-items: center; gap: 12px 20px; padding: 16px 28px 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; margin: 0; font: 800 24px/1 var(--display); letter-spacing: -0.03em; white-space: nowrap; }
@@ -1191,6 +1209,7 @@ a.tile.ask:hover { border-color: var(--orange); }
       </div>
       <p class="locmsg" id="locmsg" role="status" hidden></p>
     </div>
+    <svg class="bf-bike" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="28" r="10"/><circle cx="51" cy="28" r="10"/><path d="M13 28 24 10h18l9 18"/><path d="M24 10l9 18h4"/><path d="M21 5h8"/><path d="M42 10l-2-6h6"/></g></svg>
     <div class="filters" id="filters" role="group" aria-label="Filtros"></div>
   </header>
 
@@ -1244,7 +1263,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261117.0344';
+  var BUILD = '20261117.0403';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
