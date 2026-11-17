@@ -18,12 +18,6 @@
 "comuna": "Vitacura"
 },
 {
-"id": "caramagnola",
-"name": "Caramagnola Bike & Beer",
-"type": "bar",
-"comuna": "La Reina"
-},
-{
 "id": "elcamino",
 "name": "El Camino Diner",
 "type": "restaurant",
@@ -360,12 +354,6 @@
 "comuna": "Providencia"
 },
 {
-"id": "labici",
-"name": "Café la Bicicleta",
-"type": "cafe",
-"comuna": "Providencia"
-},
-{
 "id": "bikecostanera",
 "name": "Bike Costanera",
 "type": "punto",
@@ -388,6 +376,12 @@
 "name": "Blue Bird Café Vitacura",
 "type": "cafe",
 "comuna": "Vitacura"
+},
+{
+"id": "fuentealemana",
+"name": "Fuente Alemana",
+"type": "rapida",
+"comuna": "Providencia"
 },
 {
 "id": "fuente5",

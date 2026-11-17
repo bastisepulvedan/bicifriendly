@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-UcL3BkGuHYY606A5+BBg+tZjddm2ODuTz1Gy6EEo69I=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9g0KHAkmR8IujBgd2XwXtmIz+qepIn1NN7QGi3IJjhE=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-Ch3GvmXvvoUv9J0HB6gG5XS2rE66TO0EzqVBVf4SdS8=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -1027,6 +1027,7 @@ html:not([data-theme="light"]) .vg.vt svg { color: var(--gL); }
 .tile.vtile svg { color: var(--gD); stroke: currentColor; fill: none; }
 html:not([data-theme="light"]) .tile.vtile svg { color: var(--gL); }
 .tile.vtile { --leaf-cut: var(--s2); }
+.tile .tsub { font-size: 12px; color: var(--muted); }
 .tile.vtile small { font-size: 12px; color: var(--muted); }
 .tile { background: var(--s2); padding: 12px; display: flex; flex-direction: column; gap: 8px; border-left: 4px solid var(--ink); min-height: 76px; }
 .tile .big { font: 800 20px/1 var(--display); color: var(--or-text); letter-spacing: -0.02em; }
@@ -1243,7 +1244,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261117.0224';
+  var BUILD = '20261117.0337';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1337,23 +1338,22 @@ a.tile.ask:hover { border-color: var(--orange); }
 
     {"id":"draga","name":"Draga Coffee","type":"cafe","address":"Huelén 71","comuna":"Providencia","lat":-33.4317,"lng":-70.623,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"felix","name":"Félix Café","type":"cafe","address":"Coyancura 2223, local 8","comuna":"Providencia","lat":-33.42363,"lng":-70.60851,"bicis":"Bici friendly","veg":"vn","vegnota":"Leche vegetal y opciones veganas","src":"Santiago Coffee Lovers 2026"},
-    {"id":"singular","name":"Singular Coffee × All4Bikers","type":"cafe","address":"Av. Las Condes 11700, local 102-A","comuna":"Vitacura","lat":-33.379,"lng":-70.5335,"taller":true,"extra":"Tienda y servicio técnico All4Bikers","ruta":"Camino a Farellones y Lo Barnechea","src":"Ridechile feb 2026"},
-    {"id":"caramagnola","name":"Caramagnola Bike & Beer","type":"bar","address":"Av. Francisco Bilbao 4471","comuna":"La Reina","lat":-33.4316239,"lng":-70.5795366,"exact":true,"src":"Confirmado por BiciFriendly nov 2026","descuento":"15%"},
-    {"id":"elcamino","name":"El Camino Diner","type":"restaurant","address":"Padre Letelier 0203, esq. Los Conquistadores","comuna":"Providencia","lat":-33.4176,"lng":-70.6121,"ruta":"Al pie del acceso Pedro de Valdivia Norte al San Cristóbal","extra":"Recomendado por la comunidad","src":"Comunidad IG nov 2026"},
+    {"id":"singular","name":"Singular Coffee × All4Bikers","type":"cafe","address":"Av. Las Condes 11700, local 102-A","comuna":"Vitacura","lat":-33.379,"lng":-70.5335,"taller":true,"extra":"Tienda y servicio técnico All4Bikers","ruta":"Camino a Farellones y Lo Barnechea","bicis":"Bicicletero","src":"Ridechile feb 2026; bicicletero confirmado por BiciFriendly nov 2026"},
+    {"id":"elcamino","name":"El Camino Diner","type":"restaurant","address":"Padre Letelier 0203, esq. Los Conquistadores","comuna":"Providencia","lat":-33.4176,"lng":-70.6121,"ruta":"Al pie del acceso Pedro de Valdivia Norte al San Cristóbal","extra":"Sin bicicletero, pero el personal te ofrece guardar la bici adentro (reseña Google)","src":"Comunidad IG nov 2026"},
     {"id":"mut","name":"MUT · Mercado Urbano Tobalaba","type":"punto","address":"Av. Apoquindo con Tobalaba","comuna":"Las Condes","lat":-33.4172,"lng":-70.6012,"bicis":"Más de 2.000 estacionamientos","taller":true,"extra":"Decathlon Bike Lab, metro Tobalaba","src":"Chócale 2026"},
-    {"id":"parador","name":"Parador del Ciclista","type":"punto","address":"Camino a Farellones (G-21), antes de Corral Quemado","comuna":"Lo Barnechea","lat":-33.3528532934991,"lng":-70.36875222789324,"exact":true,"ruta":"Parada clásica camino a Farellones","extra":"Meta 1 del Desafío Bci Subaru (nov 2025)","src":"Desafío Bci Subaru nov 2025"},
+    {"id":"parador","name":"Parador del Ciclista","type":"punto","address":"Camino a Farellones (G-21), antes de Corral Quemado","comuna":"Lo Barnechea","lat":-33.3528532934991,"lng":-70.36875222789324,"exact":true,"ruta":"Parada clásica camino a Farellones","extra":"Meta 1 del Desafío Bci Subaru (nov 2025)","bicis":"Bicicletero","src":"Desafío Bci Subaru nov 2025; bicicletero confirmado por BiciFriendly nov 2026"},
     {"id":"letelier","name":"Caffè Letelier","type":"cafe","address":"Los Conquistadores 2242","comuna":"Providencia","lat":-33.4179,"lng":-70.6116,"bicis":"Bici a tu lado en la plaza","ruta":"Cerca del acceso Pedro de Valdivia Norte al San Cristóbal","extra":"Picnic en la Plaza Padre Letelier","src":"Comunidad IG nov 2026"},
     {"id":"singularsuecia","name":"Singular Coffee Suecia","type":"cafe","address":"Suecia 161","comuna":"Providencia","lat":-33.4207,"lng":-70.6058,"extra":"Recomendado para la pasada al San Cristóbal","src":"Comunidad IG nov 2026"},
-    {"id":"elephant","name":"The Elephant Coffee","type":"cafe","address":"Napoleón 2868","comuna":"Las Condes","lat":-33.4157,"lng":-70.6022,"extra":"Terraza pet-friendly","veg":"vn","vegnota":"Muchas opciones veganas y vegetarianas en la carta","src":"Comunidad IG nov 2026"},
+    {"id":"elephant","name":"The Elephant Coffee","type":"cafe","address":"Napoleón 2898","comuna":"Las Condes","lat":-33.4184743,"lng":-70.5992684,"extra":"Terraza pet-friendly","veg":"vn","vegnota":"Muchas opciones veganas y vegetarianas en la carta","exact":true,"src":"Comunidad IG nov 2026"},
     {"id":"fuentechilenaomnium","name":"Fuente Chilena · Omnium","type":"rapida","address":"Av. Apoquindo 4900, local 110","comuna":"Las Condes","lat":-33.4147,"lng":-70.583,"bicis":"Te reciben con bici en la terraza","src":"Comunidad IG nov 2026"},
     {"id":"fuentechilenapdv","name":"Fuente Chilena · Pedro de Valdivia","type":"rapida","address":"Av. Pedro de Valdivia 0149","comuna":"Providencia","lat":-33.4222,"lng":-70.6136,"bicis":"Bicicletero dentro del local","src":"Comunidad IG nov 2026"},
     {"id":"elephanthortensias","name":"The Elephant Coffee · Las Hortensias","type":"cafe","address":"Sector Las Hortensias","comuna":"Providencia","lat":-33.4261917,"lng":-70.5942895,"exact":true,"extra":"Segundo local de The Elephant","veg":"vn","vegnota":"Muchas opciones veganas y vegetarianas en la carta","src":"Comunidad IG nov 2026"},
-    {"id":"grupeta","name":"La Grupeta Café","type":"cafe","address":"Lo Barnechea (ver ubicación en el mapa)","comuna":"Lo Barnechea","lat":-33.3616891,"lng":-70.5451461,"exact":true,"extra":"Café de ambiente ciclista","src":"Comunidad IG nov 2026"},
+    {"id":"grupeta","name":"La Grupeta Café","type":"cafe","address":"Manquehue Oriente 2030, local 2","comuna":"Lo Barnechea","lat":-33.3616891,"lng":-70.5451461,"exact":true,"extra":"Café de ambiente ciclista","bicis":"Bicicletero en el strip center","src":"Comunidad IG nov 2026; bicicletero confirmado por BiciFriendly nov 2026"},
     {"id":"pergola","name":"La Pérgola del San Cristóbal","type":"cafe","address":"Parque Metropolitano, Cerro San Cristóbal","comuna":"Recoleta","lat":-33.4243108,"lng":-70.6323121,"exact":true,"ruta":"Parada en la subida al San Cristóbal","src":"Comunidad IG nov 2026"},
     {"id":"rinconciclistas","name":"El Rincón de los Ciclistas","type":"punto","address":"Camino al Volcán (G-25)","comuna":"San José de Maipo","lat":-33.6772507,"lng":-70.3413217,"exact":true,"ruta":"Parada en la ruta al Cajón del Maipo","src":"Comunidad IG nov 2026"},
     {"id":"carreton","name":"Kiosco El Carretón","type":"rapida","address":"Camino al Volcán (G-25)","comuna":"San José de Maipo","lat":-33.66875,"lng":-70.3535358,"exact":true,"ruta":"Parada en la ruta al Cajón del Maipo","src":"Comunidad IG nov 2026"},
     {"id":"curva21","name":"Kiosco Curva 21 «Saca Pica»","type":"rapida","address":"Camino a Farellones (G-21), curva 21","comuna":"Lo Barnechea","lat":-33.3514479,"lng":-70.3287786,"exact":true,"ruta":"Parada en la subida a Farellones","src":"Comunidad IG nov 2026"},
-    {"id":"scl-el-eje-cafetero","name":"El eje cafetero","type":"cafe","address":"Constitución 50 L44","comuna":"Providencia","lat":-33.43374,"lng":-70.63513,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-el-eje-cafetero","name":"El eje cafetero","type":"cafe","address":"Pío Nono 52, local 44","comuna":"Providencia","lat":-33.43374,"lng":-70.63513,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-miyuki-coffee","name":"Miyuki Coffee","type":"cafe","address":"Av. Departamental 1595","comuna":"San Miguel","lat":-33.50143,"lng":-70.66304,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-ciao-fiorentina","name":"Ciao Fiorentina","type":"cafe","address":"Av. Pocuro 3015","comuna":"Providencia","lat":-33.43142,"lng":-70.5881,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-casa-dagostino","name":"Casa D’Agostino","type":"cafe","address":"Pedro de Valdivia Norte 0653","comuna":"Providencia","lat":-33.41565,"lng":-70.61707,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
@@ -1362,44 +1362,44 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"scl-norai","name":"Norai","type":"cafe","address":"Fidel Oteiza 1913","comuna":"Providencia","lat":-33.42607,"lng":-70.61313,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-prensa","name":"Café Prensa","type":"cafe","address":"Triana 847","comuna":"Providencia","lat":-33.43315,"lng":-70.62487,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-draga-coffee-co-roman-diaz","name":"Draga Coffee Co. · Román Díaz","type":"cafe","address":"Román Díaz 56","comuna":"Providencia","lat":-33.43088,"lng":-70.62225,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-ratio-coffee-company","name":"Ratio Coffee Company","type":"cafe","address":"Merced 307","comuna":"Santiago","lat":-33.43711,"lng":-70.64128,"bicis":"Bici friendly","veg":"vn","vegnota":"Leche vegetal y pastelería vegana","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-ratio-coffee-company","name":"Ratio Coffee Company","type":"cafe","address":"Merced 307","comuna":"Santiago","lat":-33.43711,"lng":-70.64128,"bicis":"Bici friendly","veg":"vn","vegnota":"Leche vegetal y pastelería vegana","bicipub":"Bicicletero público a 30 m","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-arrayan-cafe","name":"Arrayán Café","type":"cafe","address":"Compañía 2077","comuna":"Santiago","lat":-33.43994,"lng":-70.66583,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-black-mamba","name":"Café Black Mamba","type":"cafe","address":"Eliodoro Yáñez 1228 L.104","comuna":"Providencia","lat":-33.43351,"lng":-70.61896,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas, brunch vegano","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-rayo-negro","name":"Café Rayo Negro","type":"cafe","address":"Av. Irarrázaval 1309","comuna":"Ñuñoa","lat":-33.4534,"lng":-70.61726,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-triciclo","name":"Café Triciclo","type":"cafe","address":"Santo Domingo 598","comuna":"Santiago","lat":-33.43566,"lng":-70.64582,"bicis":"Bici friendly","veg":"vn","vegnota":"Productos veganos en la carta","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-coffee-culture-la-paz","name":"Coffee Culture · La Paz","type":"cafe","address":"Av. La Paz 482","comuna":"Independencia","lat":-33.42526,"lng":-70.65145,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-good-cafe","name":"Good Café","type":"cafe","address":"Compañía de Jesús 1230","comuna":"Santiago","lat":-33.43911,"lng":-70.65412,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-quila-cafe","name":"Quila Café","type":"cafe","address":"Av. Pocuro 1821","comuna":"Providencia","lat":-33.43711,"lng":-70.61125,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-r3-coffee-londres","name":"R3 Coffee · Londres","type":"cafe","address":"Londres 32","comuna":"Santiago","lat":-33.44419,"lng":-70.64804,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-quila-cafe","name":"Quila Café","type":"cafe","address":"Av. Pocuro 1821","comuna":"Providencia","lat":-33.43711,"lng":-70.61125,"bicis":"Bici friendly","bicipub":"Bicicletero público a 38 m","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-r3-coffee-londres","name":"R3 Coffee · Londres","type":"cafe","address":"Londres 42","comuna":"Santiago","lat":-33.44419,"lng":-70.64804,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-welkom-coffee","name":"Welkom Coffee","type":"cafe","address":"Nueva de Lyon 036","comuna":"Providencia","lat":-33.4215,"lng":-70.6102,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-justicia-cafe","name":"Justicia Café","type":"cafe","address":"Av. Libertador Bernardo O'Higgins 651, Biblioteca Nacional","comuna":"Santiago","lat":-33.44225,"lng":-70.64565,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-chilean-coffee-mercado-condell","name":"Chilean Coffee · Mercado Condell","type":"cafe","address":"Av. Italia 1379, Mercado Condell","comuna":"Providencia","lat":-33.44704,"lng":-70.62505,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-chilean-coffee-santa-isabel","name":"Chilean Coffee · Santa Isabel","type":"cafe","address":"Santa Isabel 517","comuna":"Providencia","lat":-33.44606,"lng":-70.62407,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-3841-coffee-roasters","name":"3841 Coffee Roasters","type":"cafe","address":"Lastarria 288","comuna":"Santiago","lat":-33.43827,"lng":-70.64119,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-3841-coffee-roasters","name":"3841 Coffee Roasters","type":"cafe","address":"Lastarria 288","comuna":"Santiago","lat":-33.43827,"lng":-70.64119,"bicis":"Bici friendly","bicipub":"Bicicletero público a 15 m","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-altura-bulnes","name":"Café Altura · Bulnes","type":"cafe","address":"Paseo Bulnes 220","comuna":"Santiago","lat":-33.44687,"lng":-70.65294,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-altura-la-vega","name":"Café Altura · La Vega","type":"cafe","address":"Dávila Baeza 700","comuna":"Recoleta","lat":-33.42815,"lng":-70.64835,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-cafe-altura-manuel-montt","name":"Café Altura · Manuel Montt","type":"cafe","address":"Av. Manuel Montt 053","comuna":"Providencia","lat":-33.42823,"lng":-70.62057,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-cafe-altura-manuel-montt","name":"Café Altura · Manuel Montt","type":"cafe","address":"Av. Manuel Montt 053","comuna":"Providencia","lat":-33.42823,"lng":-70.62057,"bicis":"Bici friendly","bicipub":"Bicicletero público a 40 m","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-altura-mut","name":"Café Altura · MUT","type":"cafe","address":"Mercado Urbano Tobalaba, piso -2","comuna":"Las Condes","lat":-33.41728,"lng":-70.60109,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-altura-moneda","name":"Café Altura · Moneda","type":"cafe","address":"Moneda 877","comuna":"Santiago","lat":-33.44168,"lng":-70.64885,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-cafe-area","name":"Café Área","type":"cafe","address":"Miraflores 419","comuna":"Santiago","lat":-33.43844,"lng":-70.64247,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas dulces y saladas","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-cafe-area","name":"Café Área","type":"cafe","address":"Victoria Subercaseaux 295, esquina Miraflores","comuna":"Santiago","lat":-33.43844,"lng":-70.64247,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas dulces y saladas","bicipub":"Bicicletero público a 19 m","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafe-las-donas","name":"Café Las Doñas","type":"cafe","address":"Fray Camilo Henríquez 219","comuna":"Santiago","lat":-33.44499,"lng":-70.63555,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-cafecito-house","name":"Cafecito House","type":"cafe","address":"Julio Prado 838","comuna":"Providencia","lat":-33.44074,"lng":-70.62249,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-caracol-coffee-house","name":"Caracol Coffee House","type":"cafe","address":"Sancho de la Hoz 3475 L.10","comuna":"Vitacura","lat":-33.40428,"lng":-70.59736,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-coete-cafe-luis-thayer-ojeda","name":"Coete Café · Luis Thayer Ojeda","type":"cafe","address":"Av. Luis Thayer Ojeda 139","comuna":"Providencia","lat":-33.4179,"lng":-70.60371,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"scl-el-galgo-cafe","name":"El Galgo Café","type":"cafe","address":"Av. Providencia 2035","comuna":"Providencia","lat":-33.4233,"lng":-70.61176,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
+    {"id":"scl-el-galgo-cafe","name":"El Galgo Café","type":"cafe","address":"Av. Providencia 2035","comuna":"Providencia","lat":-33.4233,"lng":-70.61176,"bicis":"Bici friendly","bicipub":"Bicicletero público a 20 m","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-espresshood","name":"EspressHood","type":"cafe","address":"Ayacucho 473","comuna":"Santiago","lat":-33.43708,"lng":-70.64639,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-la-loba-cafe","name":"La Loba Café","type":"cafe","address":"Diagonal Rancagua 980","comuna":"Providencia","lat":-33.43974,"lng":-70.62043,"bicis":"Bici friendly","veg":"vn","vegnota":"Opciones veganas","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-atha-coffee","name":"Atha Coffee","type":"cafe","address":"Miraflores 419","comuna":"Santiago","lat":-33.43759,"lng":-70.64558,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
     {"id":"scl-oli-cafe","name":"Oli Café","type":"cafe","address":"Huérfanos 3044","comuna":"Santiago","lat":-33.44246,"lng":-70.67695,"bicis":"Bici friendly","src":"Santiago Coffee Lovers 2026"},
-    {"id":"caramagnolahda","name":"Pizzería Caramagnola · Hernando de Aguirre","type":"restaurant","address":"Hernando de Aguirre","comuna":"Providencia","lat":-33.4357939,"lng":-70.5951846,"exact":true,"extra":"Otro local de Caramagnola","src":"Comunidad nov 2026"},
+    {"id":"caramagnolahda","name":"Pizzería Caramagnola · Hernando de Aguirre","type":"restaurant","address":"Av. Hernando de Aguirre","comuna":"Providencia","lat":-33.4357939,"lng":-70.5951846,"exact":true,"extra":"Otro local de Caramagnola","bicis":"Bicicletero","src":"Comunidad nov 2026; bicicletero confirmado por BiciFriendly nov 2026"},
     {"id":"sucucho","name":"Sucucho Bike","type":"cafe","address":"Rancagua 188","comuna":"Providencia","lat":-33.4446,"lng":-70.6292,"taller":true,"ciclovia":"Parque Bustamante","src":"Confirmado por BiciFriendly nov 2026"},
-    {"id":"litbust","name":"Café Literario Bustamante","type":"cafe","address":"Parque Bustamante, entre Baquedano y Rancagua","comuna":"Providencia","lat":-33.4412,"lng":-70.6322,"ciclovia":"Parque Bustamante","src":"Confirmado por BiciFriendly nov 2026"},
-    {"id":"litbalm","name":"Café Literario Balmaceda","type":"cafe","address":"Parque Balmaceda, a la altura de Condell","comuna":"Providencia","lat":-33.432,"lng":-70.6262,"ciclovia":"Parque Balmaceda","src":"Confirmado por BiciFriendly nov 2026"},
-    {"id":"labici","name":"Café la Bicicleta","type":"cafe","address":"Av. Pocuro 3091","comuna":"Providencia","lat":-33.4302,"lng":-70.5996,"taller":true,"ciclovia":"Pocuro","src":"Confirmado por BiciFriendly nov 2026"},
+    {"id":"litbust","name":"Café Literario Bustamante","type":"cafe","address":"Parque Bustamante, entre Baquedano y Rancagua","comuna":"Providencia","lat":-33.4412,"lng":-70.6322,"ciclovia":"Parque Bustamante","bicis":"Bicicletero público junto al café","src":"Confirmado por BiciFriendly nov 2026; bicicletero: Municipalidad de Providencia"},
+    {"id":"litbalm","name":"Café Literario Balmaceda","type":"cafe","address":"Parque Balmaceda, a la altura de Condell","comuna":"Providencia","lat":-33.432,"lng":-70.6262,"ciclovia":"Parque Balmaceda","bicis":"Bicicletero público junto al café","src":"Confirmado por BiciFriendly nov 2026; bicicletero: Municipalidad de Providencia"},
     {"id":"bikecostanera","name":"Bike Costanera","type":"punto","address":"Av. Andrés Bello 2425, acceso lateral","comuna":"Providencia","lat":-33.417,"lng":-70.607,"bicis":"Más de 800 estacionamientos","extra":"Duchas, lockers y herramientas","src":"Confirmado por BiciFriendly nov 2026"},
     {"id":"dabruno","name":"Pizzería Da Bruno","type":"rapida","address":"Triana 857, Barrio Triana","comuna":"Providencia","lat":-33.4335574,"lng":-70.6248163,"exact":true,"bicis":"Bicicletero seguro","extra":"Pizza napolitana al paso","veg":"vn","vegnota":"Opciones veganas","src":"Comunidad IG nov 2026"},
     {"id":"olympia","name":"Olympia Frozen Yogurt","type":"cafe","address":"General Salvo 20","comuna":"Providencia","lat":-33.4332585,"lng":-70.6254437,"exact":true,"bicis":"Bicicletero seguro","extra":"Heladería de yogurt griego, a pasos de metro Salvador","veg":"vn","vegnota":"Frozen yogurt vegano","src":"Comunidad IG nov 2026"},
     {"id":"bluebird","name":"Blue Bird Café Vitacura","type":"cafe","address":"Av. Bicentenario 3883, local 3","comuna":"Vitacura","lat":-33.3982607,"lng":-70.6003616,"exact":true,"bicis":"Bicicletero","src":"Confirmado por BiciFriendly nov 2026"},
+    {"id":"fuentealemana","name":"Fuente Alemana","type":"rapida","address":"Av. Pedro de Valdivia 210","comuna":"Providencia","lat":-33.4253797,"lng":-70.6114439,"exact":true,"bicis":"Bicicletero","src":"Comunidad IG nov 2026"},
     {"id":"fuente5","name":"Fuente Número 5","type":"bar","address":"Gerónimo de Alderete 1603","comuna":"Vitacura","lat":-33.388014,"lng":-70.5642226,"exact":true,"descuento":"20%","extra":"Descuento solo sábados y domingos. 20 líneas de cerveza artesanal","src":"Comunidad IG nov 2026"},
     {"id":"frenchtakos","name":"Autentiko French Takos","type":"rapida","address":"Santa Isabel 296, Barrio Italia","comuna":"Providencia","lat":-33.446507,"lng":-70.627505,"exact":true,"extra":"French tacos","src":"Comunidad IG nov 2026"}
   ];
@@ -1496,6 +1496,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     var t = [];
     if (p.descuento) t.push(p.descuento + ' a ciclistas');
     if (p.bicis) t.push(p.bicis);
+    if (p.bicipub) t.push(p.bicipub);
     if (p.taller) t.push('Taller mecánico');
     if (p.ciclovia) t.push('Ciclovía ' + p.ciclovia);
     if (p.ruta) t.push(p.ruta);
@@ -1631,6 +1632,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     var tiles = [];
     var perk = p.descuento ? '<div class="fx-perk">' + esc(p.descuento) + ' de descuento si llegas en bici</div>' : '';
     if (p.bicis) tiles.push('<div class="tile">' + (bikeOk(p) ? ico('i-park') : '') + '<span class="txt">' + esc(p.bicis) + '</span></div>');
+    if (p.bicipub) tiles.push('<div class="tile">' + ico('i-park') + '<span class="txt">' + esc(p.bicipub) + '</span><small class="tsub">Municipal, según OpenStreetMap</small></div>');
     if (p.taller) tiles.push('<div class="tile">' + ico('i-wrench') + '<span class="txt">Taller mecánico</span></div>');
     if (p.ciclovia) tiles.push('<div class="tile">' + ico('i-lane') + '<span class="txt">Ciclovía ' + esc(p.ciclovia) + '</span></div>');
     if (p.ruta) tiles.push('<div class="tile">' + ico('i-bike') + '<span class="txt">' + esc(p.ruta) + '</span></div>');
