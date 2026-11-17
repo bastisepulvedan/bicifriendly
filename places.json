@@ -378,12 +378,6 @@
 "comuna": "Vitacura"
 },
 {
-"id": "fuentealemana",
-"name": "Fuente Alemana",
-"type": "rapida",
-"comuna": "Providencia"
-},
-{
 "id": "fuente5",
 "name": "Fuente Número 5",
 "type": "bar",
