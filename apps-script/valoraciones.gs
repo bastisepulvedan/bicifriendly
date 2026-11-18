@@ -32,6 +32,7 @@ const VW_CAMBIOS_DIA = 3;    // envíos por navegador y lugar en 24 horas (inclu
 const VW_MAX_MIN = 30;       // valoraciones por minuto para todo el sitio
 const VW_MAX_COMENTARIO = 500;
 const VW_COMENTARIOS_POR_LUGAR = 5;
+const VW_CACHE_SEG = 1800;   // la página recibe la respuesta guardada hasta 30 min; un voto o una edición la renueva al tiro
 
 function valorarWeb_(body) {
   const sid = String(body.sid || '');
@@ -136,12 +137,12 @@ function doGet(e) {
       }
     }
     json = JSON.stringify({ resumen: resumen, comentarios: comentarios });
-    cache.put('vw:get', json, 120);
+    cache.put('vw:get', json, VW_CACHE_SEG);
   }
   return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
 }
 
-/** Al aprobar u ocultar algo a mano en la planilla, la página se entera en menos de 2 minutos. */
+/** Al aprobar u ocultar algo a mano en la planilla, se borra la respuesta guardada y la página se entera al tiro. */
 function vwAlEditar(e) {
   try {
     if (e && e.range && e.range.getSheet().getName() === VW_HOJA) CacheService.getScriptCache().remove('vw:get');

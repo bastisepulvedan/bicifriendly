@@ -331,6 +331,8 @@ function actualizarResumen() {
     if (sobra > 0) res.getRange(out.length + 1, 1, sobra, 3).clearContent();
     if (descartadas) console.warn('actualizarResumen: ' + descartadas + ' respuestas descartadas por datos inválidos');
     escribirAlertas_(ss, ignorados);
+    // Los votos del formulario también renuevan la respuesta guardada de la página (valoraciones.gs).
+    CacheService.getScriptCache().remove('vw:get');
   } catch (e) {
     console.error('actualizarResumen falló: ' + (e && e.stack || e));
     throw e;
