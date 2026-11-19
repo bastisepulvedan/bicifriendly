@@ -394,5 +394,89 @@
 "name": "Autentiko French Takos",
 "type": "rapida",
 "comuna": "Providencia"
+},
+{
+"id": "copenhague",
+"name": "Pizzería Copenhague",
+"type": "restaurant",
+"comuna": "Ñuñoa"
+},
+{
+"id": "brekkie",
+"name": "Brekkie",
+"type": "cafe",
+"comuna": "Providencia"
+},
+{
+"id": "bikesbagels",
+"name": "Bikes & Bagels",
+"type": "cafe",
+"comuna": "Pichilemu"
+},
+{
+"id": "cicle",
+"name": "Ciclé",
+"type": "cafe",
+"comuna": "Valdivia"
+},
+{
+"id": "bogador",
+"name": "Cafetería El Bogador",
+"type": "cafe",
+"comuna": "Valdivia"
+},
+{
+"id": "felsinea",
+"name": "Cafetería La Felsinea",
+"type": "cafe",
+"comuna": "Panguipulli"
+},
+{
+"id": "elavion",
+"name": "El Avión Cafetería",
+"type": "cafe",
+"comuna": "Chaitén"
+},
+{
+"id": "dondebetty",
+"name": "Donde la Betty",
+"type": "restaurant",
+"comuna": "Chaitén"
+},
+{
+"id": "rutamaitenes",
+"name": "Ruta Maitenes Café",
+"type": "cafe",
+"comuna": "Casablanca"
+},
+{
+"id": "paulina",
+"name": "Paulina Kiosk",
+"type": "rapida",
+"comuna": "Casablanca"
+},
+{
+"id": "cafepintor",
+"name": "Café del Pintor",
+"type": "restaurant",
+"comuna": "Valparaíso"
+},
+{
+"id": "soulsurf",
+"name": "Soul Surf",
+"type": "restaurant",
+"comuna": "Concón"
+},
+{
+"id": "energia",
+"name": "Café Energía",
+"type": "cafe",
+"comuna": "La Serena"
+},
+{
+"id": "fabbrica",
+"name": "Fabbrica",
+"type": "cafe",
+"comuna": "San Pedro de la Paz"
 }
 ]

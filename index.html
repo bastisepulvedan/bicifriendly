@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DFUSUeFlS1SmyvpIH6sJL6z8Si2jtmoAiXSZnq5NI+w=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-2+4DMt4UBNFZIYE4hXVTMOHZSK8kp9yYo/qP68doKds=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DFUSUeFlS1SmyvpIH6sJL6z8Si2jtmoAiXSZnq5NI+w=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-G4aqsg9IFD4aX+h3W3jNZnVYTUSgPnxPsoieZSR84O8=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -891,10 +891,48 @@ html[data-theme="light"] .chip[aria-pressed="true"] .lf { color: var(--gL); }
 .fbtn .badge { min-width: 20px; height: 20px; padding-top: 2px; display: inline-grid; place-items: center; background: var(--orange); color: #000; font-size: 12px; font-weight: 800; }
 .chip.fbtn.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 @media (min-width: 821px) {
-  .filters .chip, .seg button { padding: 2px 10px 0; gap: 6px; }
+  .filters .chip, .seg button { padding: 2px 8px 0; gap: 5px; }
   .filters { gap: 6px; }
   .filters .vsep { margin: 0 2px; }
 }
+/* Selector de zona */
+.chip.zbtn { font-weight: 800; gap: 6px; }
+.zbtn .pinI { color: var(--orange); stroke-width: 2.6; }
+.zbtn .zch { width: 14px; height: 14px; stroke-width: 3; }
+.zbtn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.zs-panel { gap: 12px; }
+.zs-list { display: flex; flex-direction: column; }
+.zs-row .lbl2 { font-weight: 800; }
+.zs-row[aria-checked="true"] { color: var(--or-text); }
+.zs-row[aria-checked="true"] .box { border-radius: 50%; }
+.zs-row .box { border-radius: 50%; }
+.zs-row[aria-checked="true"] .box::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--orange); }
+.zs-loc { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 2px 12px 0; border: 2px dashed var(--field-line); background: transparent; color: var(--ink); font: 800 15px var(--body); cursor: pointer; }
+.zs-loc svg { color: var(--orange); }
+.zs-loc:focus-visible, .zs-row:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+@media (min-width: 821px) {
+  .zsheet { background: transparent; justify-content: flex-start; }
+  .zsheet .fs-back { position: absolute; inset: 0; }
+  .zs-panel { position: absolute; width: 320px; max-height: 70vh; padding: 16px; border: 2px solid var(--rule); border-top: 4px solid var(--orange); box-shadow: 6px 6px 0 var(--shadow); }
+  .zs-panel .fs-head h2 { font-size: 18px; }
+  .zs-panel .fs-row { min-height: 46px; font-size: 15px; }
+}
+.zb-wrap { background: none; border: 0; }
+.zb { display: inline-flex; align-items: center; gap: 6px; transform: translate(-22px, -22px); white-space: nowrap; cursor: pointer; }
+.zb b { min-width: 44px; height: 44px; padding: 3px 8px 0; box-sizing: border-box; border-radius: 22px; display: grid; place-items: center; background: var(--orange); color: #000; font: 800 16px var(--body); border: 3px solid var(--bg); }
+.zb.sm b { background: var(--pin-bg); color: var(--pin-fg); }
+.zb.lft { flex-direction: row-reverse; transform: translate(calc(-100% - 4px), -22px); }
+.zb span { padding: 4px 8px 2px; background: var(--bg); color: var(--ink); border: 2px solid var(--rule); font: 800 13px var(--body); }
+.zb:hover b { background: var(--ink); color: var(--bg); }
+.wn { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px 2px; border: 2px dashed var(--or-text); color: var(--or-text); font: 800 11px/1 var(--body); white-space: nowrap; align-self: flex-start; }
+.wn svg { width: 13px; height: 13px; stroke-width: 2.6; }
+.ssn { display: inline-flex; padding: 4px 7px 2px; background: var(--ink); color: var(--bg); font: 800 11px/1 var(--body); white-space: nowrap; align-self: flex-start; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.fx-warn { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px 10px; border: 2px dashed var(--or-text); font-size: 14px; line-height: 1.45; }
+.fx-warn svg { width: 20px; height: 20px; color: var(--or-text); stroke-width: 2.4; margin-top: 1px; }
+.fx-warn b { font-weight: 800; }
+.few { margin: 16px 24px 8px; padding: 16px; background: var(--field); list-style: none; }
+.few p { margin: 0 0 12px; font-size: 14px; line-height: 1.45; max-width: 46ch; }
 /* Panel de filtros (celular) */
 .fsheet { position: fixed; inset: 0; z-index: 1400; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(0,0,0,.5); }
 .fsheet[hidden] { display: none; }
@@ -1125,11 +1163,15 @@ a.tile.ask:hover { border-color: var(--orange); }
   .app { display: block; }
   .mapwrap { position: fixed; inset: 0; z-index: 1; }
   .top { position: fixed; left: 0; right: 0; top: 0; background: var(--bg); border-bottom: 2px solid var(--rule); }
-  .bar { padding: max(12px, env(safe-area-inset-top)) 16px 8px; gap: 8px 12px; }
+  .bar { padding: max(12px, env(safe-area-inset-top)) 16px 8px; gap: 8px 10px; }
   .brand { font-size: 20px; }
   .search { order: 3; flex-basis: 100%; max-width: none; height: 48px; }
   .search input { font-size: 16px; }
   .actions .chip { display: none; }
+  .chip.zbtn { flex: 1 1 0; min-width: 0; max-width: max-content; min-height: 40px; padding: 2px 10px 0; }
+  .zbtn .pinI { display: none; }
+  .bar .actions { gap: 6px; }
+  #zoneLbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
   .actions .iconbtn.m { display: grid; }
   .filters { padding: 0 16px 12px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   .filters::-webkit-scrollbar { display: none; }
@@ -1180,6 +1222,8 @@ a.tile.ask:hover { border-color: var(--orange); }
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
@@ -1191,14 +1235,19 @@ a.tile.ask:hover { border-color: var(--orange); }
   <button type="button" class="fs-back" data-close="f" aria-label="Cerrar filtros" tabindex="-1"></button>
   <div class="fs-panel" role="dialog" aria-modal="true" aria-labelledby="fsTitle" id="fsPanel"></div>
 </div>
+<div class="fsheet zsheet" id="zsheet" hidden>
+  <button type="button" class="fs-back" data-zclose="1" aria-label="Cerrar zonas" tabindex="-1"></button>
+  <div class="fs-panel zs-panel" role="dialog" aria-modal="true" aria-labelledby="zsTitle" id="zsPanel"></div>
+</div>
 <div class="app">
   <header class="top">
     <div class="bar">
       <h1 class="brand"><span>Bici<em>Friendly</em></span></h1>
+      <button type="button" class="chip zbtn" id="zoneBtn" aria-haspopup="dialog" aria-controls="zsheet" aria-expanded="false"><svg class="i pinI" aria-hidden="true"><use href="#i-pin"/></svg><span class="vh">Zona: </span><span id="zoneLbl">Santiago</span><svg class="i zch" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
       <label class="search" for="q">
         <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
         <span class="vh">Buscar</span>
-        <input id="q" type="search" enterkeyhint="search" placeholder="Busca un café, bar o comuna" autocomplete="off">
+        <input id="q" type="search" enterkeyhint="search" placeholder="Lugar o comuna, en todo Chile" autocomplete="off">
       </label>
       <div class="actions">
         <button type="button" class="chip near" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-loc"/></svg><span>Cerca de mí</span></button>
@@ -1263,7 +1312,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261117.0403';
+  var BUILD = '20261119.0149';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1336,9 +1385,24 @@ a.tile.ask:hover { border-color: var(--orange); }
     { key: 'punto', label: 'Puntos ciclistas', types: ['punto'] }
   ];
   var groupBy = {}; GROUPS.forEach(function (g) { groupBy[g.key] = g; });
+  // Zonas: Santiago primero y después de norte a sur. Un lugar sin «zona» es de Santiago.
+  var ZONES = [
+    { id: 'scl', label: 'Santiago' },
+    { id: 'serena', label: 'La Serena y Coquimbo' },
+    { id: 'valpo', label: 'Valparaíso y Viña', left: true },
+    { id: 'pichilemu', label: 'Pichilemu', left: true },
+    { id: 'conce', label: 'Concepción' },
+    { id: 'rios', label: 'Valdivia y Panguipulli' },
+    { id: 'austral', label: 'Carretera Austral' }
+  ];
+  var zoneBy = {}; ZONES.forEach(function (z) { zoneBy[z.id] = z; });
+  function zoneOf(p) { return zoneBy[p.zona] ? p.zona : 'scl'; }
+  function zoneName(id) { return id === 'all' ? 'Todo Chile' : (zoneBy[id] ? zoneBy[id].label : 'Santiago'); }
+  var FEW = 5; // con menos lugares, la lista invita a recomendar uno
   var VEG = { vn: { label: 'Opciones veganas', chip: 'Opciones veganas', icon: 'i-leaf' }, vt: { label: 'Vegetariano', chip: 'Vegetariano', icon: 'i-leafo' } };
   var VEG_SRC = 'Mapa Vegano de @laratavegan e Instagram del local, nov 2026';
   function vegOk(p, lvl) { return lvl === 'vn' ? p.veg === 'vn' : !!p.veg; }
+  function warnBadge(p) { return (p.aviso === 'internet' ? '<span class="wn">' + ico('i-warn') + 'Reseñas de internet</span>' : '') + (p.temporada ? '<span class="ssn">' + esc(p.temporada) + '</span>' : ''); }
   function vegBadge(p) { var v = p.veg && VEG[p.veg]; return v ? '<span class="vg ' + p.veg + '">' + ico(v.icon) + v.label + '</span>' : ''; }
   // Filtros combinables, en orden de prioridad; los dos primeros quedan a la vista en el celular
   var PERKS = [
@@ -1420,11 +1484,26 @@ a.tile.ask:hover { border-color: var(--orange); }
     {"id":"bluebird","name":"Blue Bird Café Vitacura","type":"cafe","address":"Av. Bicentenario 3883, local 3","comuna":"Vitacura","lat":-33.3982607,"lng":-70.6003616,"exact":true,"bicis":"Bicicletero","src":"Confirmado por BiciFriendly nov 2026"},
     {"id":"lacleta","name":"Caffè LaCleta","type":"cafe","address":"Rojas Magallanes 3951","comuna":"La Florida","lat":-33.5357279,"lng":-70.5509519,"exact":true,"bicis":"Bicicletero o lugar seguro; te dejan entrar con la bici","ruta":"Parada típica rumbo al Panul","extra":"Rellenan botellas de agua. Atendido por su dueño, pet friendly","src":"Formulario BiciFriendly nov 2026"},
     {"id":"fuente5","name":"Fuente Número 5","type":"bar","address":"Gerónimo de Alderete 1603","comuna":"Vitacura","lat":-33.388014,"lng":-70.5642226,"exact":true,"descuento":"20%","extra":"Descuento solo sábados y domingos. 20 líneas de cerveza artesanal","src":"Comunidad IG nov 2026"},
-    {"id":"frenchtakos","name":"Autentiko French Takos","type":"rapida","address":"Santa Isabel 296, Barrio Italia","comuna":"Providencia","lat":-33.446507,"lng":-70.627505,"exact":true,"extra":"French tacos","src":"Comunidad IG nov 2026"}
+    {"id":"frenchtakos","name":"Autentiko French Takos","type":"rapida","address":"Santa Isabel 296, Barrio Italia","comuna":"Providencia","lat":-33.446507,"lng":-70.627505,"exact":true,"extra":"French tacos","src":"Comunidad IG nov 2026"},
+    {"id": "copenhague", "name": "Pizzería Copenhague", "type": "restaurant", "address": "Condell 1615, primer piso", "comuna": "Ñuñoa", "lat": -33.449484, "lng": -70.6252343, "exact": true, "bicis": "Bicicletero o lugar seguro; te dejan entrar con la bici", "taller": true, "ruta": "Parada típica de rutas de ruta y MTB", "extra": "Tienda y taller con mecánicos muy buenos. Pizza napolitana", "src": "Formulario BiciFriendly nov 2026"},
+    {"id": "brekkie", "name": "Brekkie", "type": "cafe", "address": "República de Cuba 1720", "comuna": "Providencia", "lat": -33.431438, "lng": -70.5910441, "exact": true, "bicis": "Bicicletero o lugar seguro para dejar la bici", "ciclovia": "a pasos, según la comunidad", "src": "Formulario BiciFriendly nov 2026"},
+    {"id": "bikesbagels", "zona": "pichilemu", "name": "Bikes & Bagels", "type": "cafe", "address": "Camino Pichilemu–Cáhuil–Bucalemu 3215, Punta de Lobos", "comuna": "Pichilemu", "lat": -34.4139404, "lng": -72.0285, "exact": true, "taller": true, "extra": "Arriendan bicis, también eléctricas. Café de especialidad con vista al mar", "src": "Instagram del local y reseñas de Google, nov 2026"},
+    {"id": "cicle", "zona": "rios", "name": "Ciclé", "type": "cafe", "address": "Av. Ramón Picarte 1085", "comuna": "Valdivia", "lat": -39.817212, "lng": -73.2343762, "exact": true, "bicis": "Guardan tu bici dentro del local, según su sitio web", "extra": "Café, galería de arte y centro cultural ciclista; trabaja con talleres de la ciudad", "src": "Sitio web cicle.cl, nov 2026"},
+    {"id": "bogador", "zona": "rios", "aviso": "internet", "name": "Cafetería El Bogador", "type": "cafe", "address": "General Lagos 1089", "comuna": "Valdivia", "lat": -39.820549, "lng": -73.2497177, "exact": true, "extra": "Punto de partida de brevets de ciclismo en Valdivia", "src": "Brevet Ciclismo en Valdivia (Welcu), 2023"},
+    {"id": "felsinea", "zona": "rios", "aviso": "internet", "name": "Cafetería La Felsinea", "type": "cafe", "address": "J.B. Etchegaray 611", "comuna": "Panguipulli", "lat": -39.640732, "lng": -72.3299253, "exact": true, "ruta": "Parada en la Ruta de los Siete Lagos", "src": "Guía Epic Road Rides, 2025"},
+    {"id": "elavion", "zona": "austral", "aviso": "internet", "temporada": "Abre en temporada de verano", "name": "El Avión Cafetería", "type": "cafe", "address": "Carretera Austral km 224, El Amarillo", "comuna": "Chaitén", "lat": -43.0129383, "lng": -72.5005429, "exact": true, "ruta": "Parada de cicloturistas en la Carretera Austral", "extra": "Café dentro del fuselaje de un avión histórico", "src": "Consejos de ciclistas en Komoot, 2023–2024"},
+    {"id": "dondebetty", "zona": "austral", "aviso": "internet", "name": "Donde la Betty", "type": "restaurant", "address": "Calle Los Cipreses, Villa Santa Lucía", "comuna": "Chaitén", "lat": -43.416424, "lng": -72.3668562, "exact": true, "ruta": "Parada en la Carretera Austral", "extra": "Comida casera", "src": "Guía de cicloturismo Gravel Travel, 2024"},
+    {"id": "rutamaitenes", "zona": "valpo", "aviso": "internet", "name": "Ruta Maitenes Café", "type": "cafe", "address": "Ruta F-74-G, Los Maitenes", "comuna": "Casablanca", "lat": -33.423104, "lng": -71.390095, "ruta": "Después de la Cuesta Ibacache, rumbo a la costa", "src": "Consejo de ciclista en Komoot, mar 2025"},
+    {"id": "paulina", "zona": "valpo", "aviso": "internet", "name": "Paulina Kiosk", "type": "rapida", "address": "Los Maitenes", "comuna": "Casablanca", "lat": -33.419242, "lng": -71.392715, "ruta": "Cuesta Ibacache", "extra": "Mote con huesillo. Lleva efectivo", "src": "Consejos de ciclistas en Komoot, 2026"},
+    {"id": "cafepintor", "zona": "valpo", "aviso": "internet", "name": "Café del Pintor", "type": "restaurant", "address": "Urriola 652, Cerro Alegre", "comuna": "Valparaíso", "lat": -33.0430272, "lng": -71.6282761, "exact": true, "extra": "Menú de almuerzo de 3 tiempos", "src": "Consejo de ciclista en Komoot, 2022"},
+    {"id": "soulsurf", "zona": "valpo", "aviso": "internet", "name": "Soul Surf", "type": "restaurant", "address": "Av. Borgoño 24790", "comuna": "Concón", "lat": -32.9206833, "lng": -71.5133262, "exact": true, "ruta": "Sobre la ruta costera Viña–Concón", "src": "Recomendado por ciclistas en Komoot"},
+    {"id": "energia", "zona": "serena", "aviso": "internet", "name": "Café Energía", "type": "cafe", "address": "Av. Balmaceda 487", "comuna": "La Serena", "lat": -29.902917, "lng": -71.2500315, "exact": true, "extra": "Punto de encuentro de ciclistas locales en la tarde", "src": "Consejo de ciclista en Komoot, 2022"},
+    {"id": "fabbrica", "zona": "conce", "aviso": "internet", "name": "Fabbrica", "type": "cafe", "address": "Bureo Oriente 2300, local 1", "comuna": "San Pedro de la Paz", "lat": -36.8570938, "lng": -73.0957522, "exact": true, "ruta": "Destino de una ruta en bici desde Concepción", "src": "Ruta de ciclista en Komoot, 2026"}
   ];
 
 
-  var state = { type: 'all', q: '', perks: {}, sel: null, me: null, savedOnly: false };
+  var state = { type: 'all', q: '', perks: {}, sel: null, me: null, savedOnly: false, zone: 'scl' };
+  function zoneTotal(id) { return PLACES.filter(function (p) { return id === 'all' || zoneOf(p) === id; }).length; }
   // Valoraciones: null = cargando (skeleton), false = no disponibles, objeto = listas.
   var RATINGS = (CONFIG.resumenCsvUrl || CONFIG.registroUrl) && window.fetch ? null : {};
   // Valorar en la misma ficha: va a la aplicación web del registro (valoraciones.gs).
@@ -1498,6 +1577,7 @@ a.tile.ask:hover { border-color: var(--orange); }
   }
   function matches(p, type, perks, qq) {
     if (state.savedOnly && !saved[p.id]) return false;
+    if (!qq && !state.savedOnly && state.zone !== 'all' && zoneOf(p) !== state.zone) return false;
     if (type !== 'all' && groupBy[type].types.indexOf(p.type) === -1) return false;
     for (var i = 0; i < PERKS.length; i++) if (perks[PERKS[i].key] && !has(p, PERKS[i])) return false;
     if (qq && norm(p.name + ' ' + p.address + ' ' + p.comuna).indexOf(qq) === -1) return false;
@@ -1604,7 +1684,8 @@ a.tile.ask:hover { border-color: var(--orange); }
   // ---------- Lista ----------
   function renderList() {
     var list = visible(), n = list.length;
-    $('sheetTitle').textContent = state.savedOnly ? 'Guardados' : (state.me ? 'Cerca de ti' : 'Lugares');
+    var qq0 = state.q.trim();
+    $('sheetTitle').textContent = state.savedOnly ? 'Guardados' : qq0 ? 'Resultados en todo Chile' : state.me ? 'Cerca de ti' : (state.zone === 'all' ? 'Lugares en Chile' : 'Lugares en ' + zoneName(state.zone));
     $('sheetSub').textContent = n + (n === 1 ? ' lugar' : ' lugares') + (state.me && n > 1 ? ' · por distancia' : '');
     var el = $('list');
     if (!n) {
@@ -1625,10 +1706,18 @@ a.tile.ask:hover { border-color: var(--orange); }
       return '<li class="row t-' + p.type + '" id="row-' + p.id + '" aria-current="' + (state.sel === p.id) + '">' +
         '<a class="pick" href="#' + p.id + '" data-pick="' + p.id + '">' + plate +
         '<span class="info"><span class="name">' + esc(p.name) + '</span>' +
-        '<span class="meta"><span class="kind">' + t.label + '</span>, ' + esc(p.comuna) + (dp ? ', <span class="bike-min">' + bikeMin(p) + ' min en bici</span>' : '') + '</span>' + vegBadge(p) + perkLine(p) + rate + '</span>' + kmc +
+        '<span class="meta"><span class="kind">' + t.label + '</span>, ' + esc(p.comuna) + (zoneOf(p) !== state.zone ? ' · ' + esc(zoneName(zoneOf(p))) : '') + (dp ? ', <span class="bike-min">' + bikeMin(p) + ' min en bici</span>' : '') + '</span>' +
+        (p.veg || p.aviso || p.temporada ? '<span class="badges">' + vegBadge(p) + warnBadge(p) + '</span>' : '') + perkLine(p) + rate + '</span>' + kmc +
         (saved[p.id] ? '<svg class="i saved-dot" role="img" aria-label="Guardado"><use href="#i-save"/></svg>' : '') +
         '<svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></a></li>';
-    }).join('');
+    }).join('') + fewHtml();
+  }
+
+  function fewHtml() {
+    if (state.q.trim() || state.savedOnly || state.zone === 'all' || activeCount()) return '';
+    var n = zoneTotal(state.zone); if (n >= FEW) return '';
+    return '<li class="few"><p>En ' + esc(zoneName(state.zone)) + ' hay ' + (n === 1 ? 'solo 1 lugar' : 'solo ' + n + ' lugares') + ' por ahora. ¿Conoces otro que reciba bien a los ciclistas? Recomiéndalo y lo revisamos.</p>' +
+      (CONFIG.sugerirUrl ? '<a class="chip primary" data-ev="sugerir" data-d="zona:' + state.zone + '" href="' + CONFIG.sugerirUrl + '" target="_blank" rel="noopener">Recomendar un lugar</a>' : '') + '</li>';
   }
 
   // ---------- Ficha ----------
@@ -1655,6 +1744,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     if (p.taller) tiles.push('<div class="tile">' + ico('i-wrench') + '<span class="txt">Taller mecánico</span></div>');
     if (p.ciclovia) tiles.push('<div class="tile">' + ico('i-lane') + '<span class="txt">Ciclovía ' + esc(p.ciclovia) + '</span></div>');
     if (p.ruta) tiles.push('<div class="tile">' + ico('i-bike') + '<span class="txt">' + esc(p.ruta) + '</span></div>');
+    if (p.temporada) tiles.push('<div class="tile"><span class="txt">' + esc(p.temporada) + '</span><small class="tsub">Revisa si está abierto antes de ir</small></div>');
     if (p.extra) tiles.push('<div class="tile"><span class="txt">' + esc(p.extra) + '</span></div>');
     function ask(txt) { return sug ? '<a class="tile ask" data-ev="sugerir" data-id="' + p.id + '" href="' + sug + '" target="_blank" rel="noopener"><span class="txt">' + txt + '</span><span class="cta">Cuéntanos</span></a>' : ''; }
     if (!bikeOk(p)) tiles.push(ask('¿Tiene bicicletero?'));
@@ -1663,7 +1753,8 @@ a.tile.ask:hover { border-color: var(--orange); }
     var btns = mobile ? '' : '<div class="fx-btns">' + saveBtn(p) + '<button type="button" class="iconbtn" data-close="1" aria-label="Cerrar ficha">' + ico('i-x') + '</button></div>';
     return '<div class="fx t-' + p.type + '">' + btns +
       '<div class="fx-top"><span class="fx-kind">' + kind + '</span>' + vegBadge(p) + '<h2 class="fx-name"' + (mobile ? ' id="dtName"' : '') + '>' + esc(p.name) + '</h2>' + dist + '</div>' +
-      '<span class="fx-addr">' + esc(p.address) + '</span>' + perk + rate + '<h3>Para ciclistas</h3><div class="tiles">' + tiles.join('') + '</div>' + veg + commentsHtml(p) + voteHtml(p) +
+      '<span class="fx-addr">' + esc(p.address) + (zoneOf(p) !== 'scl' ? ' · ' + esc(zoneName(zoneOf(p))) : '') + '</span>' +
+      (p.aviso === 'internet' ? '<div class="fx-warn">' + ico('i-warn') + '<span><b>Según reseñas de internet.</b> Lo encontramos en reseñas y guías de ciclistas, pero nadie de la comunidad BiciFriendly lo ha confirmado todavía. Si fuiste, cuéntanos cómo te recibieron.</span></div>' : '') + perk + rate + '<h3>Para ciclistas</h3><div class="tiles">' + tiles.join('') + '</div>' + veg + commentsHtml(p) + voteHtml(p) +
       (placeCount(p) ? '<span class="fx-count">' + ico('i-bike') + fmtN(placeCount(p)) + (placeCount(p) === 1 ? ' ciclista abrió' : ' ciclistas abrieron') + ' la ruta en bici desde BiciFriendly</span>' : '') +
       '<span class="fx-src">' + (p.src ? 'Fuente: ' + esc(p.src) + ', por verificar en terreno' : 'Sin fuente de datos ciclistas todavía') + '</span>' +
       (mobile ? '' : goHtml(p)) + '</div>';
@@ -1694,6 +1785,8 @@ a.tile.ask:hover { border-color: var(--orange); }
   // ---------- Selección ----------
   function select(id, opts) {
     opts = opts || {};
+    var zp = byId[id] && zoneOf(byId[id]);
+    if (zp && state.zone !== 'all' && zp !== state.zone) { state.zone = zp; saveZone(); updateZoneBtn(); refresh(false); }
     state.sel = id;
     document.querySelectorAll('.row').forEach(function (r) { r.setAttribute('aria-current', String(r.id === 'row-' + id)); });
     highlight();
@@ -1807,6 +1900,23 @@ a.tile.ask:hover { border-color: var(--orange); }
     if (!map) return;
     layer.clearLayers(); markers = {};
     var pts = [];
+    if (state.zone === 'all' && !state.q.trim() && !state.savedOnly && !state.me) {
+      // Todo Chile: una burbuja por zona con su número de lugares; al tocarla se entra a la zona.
+      var grp = {};
+      visible().forEach(function (p) { var z = zoneOf(p); (grp[z] = grp[z] || []).push(p); });
+      ZONES.forEach(function (z) {
+        var l = grp[z.id]; if (!l) return;
+        var lat = 0, lng = 0; l.forEach(function (p) { lat += p.lat; lng += p.lng; }); lat /= l.length; lng /= l.length;
+        var icon = L.divIcon({ className: 'zb-wrap', iconSize: [0, 0], iconAnchor: [0, 0],
+          html: '<div class="zb' + (l.length < FEW ? ' sm' : '') + (z.left ? ' lft' : '') + '"><b>' + l.length + '</b><span>' + esc(z.label) + '</span></div>' });
+        var m = L.marker([lat, lng], { icon: icon, title: z.label + ': ' + l.length + (l.length === 1 ? ' lugar' : ' lugares'), riseOnHover: true });
+        m.on('click', function (e) { if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent); setZone(z.id); });
+        m.addTo(layer); pts.push([lat, lng]);
+      });
+      if (meMarker) meMarker.addTo(map);
+      if (fit) fitTo(pts);
+      return;
+    }
     visible().forEach(function (p) {
       var t = typeBy[p.type];
       var icon = L.divIcon({ className: 'pin-wrap', iconSize: [30, 30], iconAnchor: [15, 15],
@@ -1945,6 +2055,8 @@ a.tile.ask:hover { border-color: var(--orange); }
       navigator.geolocation.getCurrentPosition(function (pos) {
         state.me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setBtns(true); msg.hidden = true; track('cerca');
+        var best = null, bd = 1e9; PLACES.forEach(function (p) { var d = km(p); if (d < bd) { bd = d; best = p; } });
+        if (best && !state.q.trim()) { state.zone = zoneOf(best); saveZone(); updateZoneBtn(); }
         if (map) {
           if (meMarker) map.removeLayer(meMarker);
           meMarker = L.marker([state.me.lat, state.me.lng], { interactive: false, keyboard: false, icon: L.divIcon({ className: 'pin-wrap', html: '<div class="me-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }) });
@@ -1969,6 +2081,60 @@ a.tile.ask:hover { border-color: var(--orange); }
     refresh(true);
     if (keep) { var el = $('fsPanel').querySelector(keep); if (el && !el.disabled) el.focus(); else { var c = $('fsPanel').querySelector('[data-close]'); if (c) c.focus(); } }
   }
+  // ---------- Selector de zona ----------
+  function saveZone() { try { localStorage.setItem('bf-zona', state.zone); } catch (e) {} }
+  function updateZoneBtn() { $('zoneLbl').textContent = zoneName(state.zone); }
+  function setZone(id, opts) {
+    opts = opts || {};
+    if (id !== 'all' && !zoneBy[id]) id = 'scl';
+    state.zone = id; saveZone(); updateZoneBtn();
+    if (state.q.trim()) { state.q = ''; $('q').value = ''; }
+    state.savedOnly = false;
+    if (state.sel && (id === 'all' || zoneOf(byId[state.sel]) !== id)) deselect();
+    refresh(opts.fit !== false);
+    if (isMobile()) setSnap('half');
+    track('zona', '', id);
+  }
+  function renderZones() {
+    var rows = [{ id: 'all', label: 'Todo Chile' }].concat(ZONES).map(function (z) {
+      var on = state.zone === z.id, n = zoneTotal(z.id);
+      return '<button type="button" class="fs-row zs-row" role="radio" data-zone="' + z.id + '" aria-checked="' + on + '"><span class="box" aria-hidden="true"></span><span class="lbl2">' + esc(z.label) + '</span><span class="n">' + n + '</span></button>';
+    }).join('');
+    $('zsPanel').innerHTML = '<div class="fs-head"><h2 id="zsTitle">Elige una zona</h2><button type="button" class="iconbtn" data-zclose="1" aria-label="Cerrar zonas">' + ico('i-x') + '</button></div>' +
+      '<button type="button" class="zs-loc" data-zloc="1">' + ico('i-loc') + (state.me ? 'Ir a la zona más cercana' : 'Usar mi ubicación') + '</button>' +
+      '<div class="zs-list" role="radiogroup" aria-label="Zonas">' + rows + '</div>';
+  }
+  var zsReturn = null;
+  function openZones() {
+    zsReturn = document.activeElement; renderZones(); $('zsheet').hidden = false; $('zoneBtn').setAttribute('aria-expanded', 'true');
+    var pnl = $('zsPanel');
+    if (!isMobile()) { var r = $('zoneBtn').getBoundingClientRect(); pnl.style.left = Math.round(r.left) + 'px'; pnl.style.top = Math.round(r.bottom + 6) + 'px'; }
+    else { pnl.style.left = ''; pnl.style.top = ''; try { document.body.style.overflow = 'hidden'; } catch (e) {} }
+    var cur = pnl.querySelector('[aria-checked="true"]') || pnl.querySelector('[data-zclose]'); if (cur) cur.focus();
+    track('zonas_panel');
+  }
+  function closeZones() { if ($('zsheet').hidden) return; $('zsheet').hidden = true; document.body.style.overflow = ''; $('zoneBtn').setAttribute('aria-expanded', 'false'); try { $('zoneBtn').focus(); } catch (e) {} }
+  $('zoneBtn').addEventListener('click', function () { if ($('zsheet').hidden) openZones(); else closeZones(); });
+  $('zsheet').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.zclose) { closeZones(); return; }
+    if (b.dataset.zone) { closeZones(); setZone(b.dataset.zone); return; }
+    if (b.dataset.zloc) {
+      closeZones();
+      if (!state.me) { locate(); return; }
+      var best = null, bd = 1e9; PLACES.forEach(function (p) { var d = km(p); if (d < bd) { bd = d; best = p; } });
+      if (best) setZone(zoneOf(best));
+    }
+  });
+  $('zsheet').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.stopPropagation(); closeZones(); return; }
+    if (e.key !== 'Tab') return;
+    var f = [].slice.call($('zsPanel').querySelectorAll('button:not(:disabled)')); if (!f.length) return;
+    if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+  });
+  window.addEventListener('resize', function () { if (!$('zsheet').hidden && !isMobile()) closeZones(); });
+
   $('filters').addEventListener('click', onFilterClick);
   $('fsheet').addEventListener('click', onFilterClick);
   $('fsheet').addEventListener('keydown', function (e) {
@@ -2045,10 +2211,17 @@ a.tile.ask:hover { border-color: var(--orange); }
   // Las funciones que usan los eventos quedan protegidas: un error se reporta y no congela la página.
   renderList = guard('lista', renderList); renderCard = guard('ficha', renderCard); renderFilters = guard('filtros', renderFilters);
   syncMarkers = guard('marcadores', syncMarkers); openDetail = guard('detalle', openDetail); select = guard('seleccion', select);
-  locate = guard('ubicacion', locate); applyTheme = guard('tema', applyTheme);
+  locate = guard('ubicacion', locate); applyTheme = guard('tema', applyTheme); setZone = guard('zona', setZone); openZones = guard('zonas', openZones);
 
   (window.__bfErr || []).forEach(function (x) { report(x.err, x.where); }); window.__bfErr = [];
   step('tema', function () { $('themeBtn').addEventListener('click', cycleTheme); setInterval(function () { if (themePref === 'auto') applyTheme(); }, 5 * 60 * 1000); applyTheme(); });
+  step('zona', function () {
+    var z = null;
+    try { var m = /[?&]zona=([a-z]+)/.exec(location.search); if (m) z = m[1]; } catch (e) {}
+    if (!z) try { z = localStorage.getItem('bf-zona'); } catch (e) {}
+    var st = byId[(location.hash || '').slice(1)]; if (st) z = zoneOf(st);
+    state.zone = z === 'all' || zoneBy[z] ? z : 'scl'; updateZoneBtn();
+  });
   step('lista', function () { renderFilters(); renderList(); });
   step('hoja', function () { setSnap('half'); });
   step('mapa', function () { if (window.L) initMap(); else mapFail('no cargó la librería del mapa'); });
