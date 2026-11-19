@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DFUSUeFlS1SmyvpIH6sJL6z8Si2jtmoAiXSZnq5NI+w=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-G4aqsg9IFD4aX+h3W3jNZnVYTUSgPnxPsoieZSR84O8=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DFUSUeFlS1SmyvpIH6sJL6z8Si2jtmoAiXSZnq5NI+w=' 'sha256-ZihqMhGbrpeK3jT+oJo4pJA6V5+y7evfwghwgIqKgt0=' 'sha256-37lObJ3RggXMlfgrdY+nDfIk0C5uQYqjK3sdTw1nGuI=' https://js.sentry-cdn.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://docs.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com https://*.sentry.io; object-src 'none'; base-uri 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -1312,7 +1312,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     sentryLoader: '',
     resumenCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ823TUdTnMg3SfHlbfbfj24a5ddb7O7fVnBwAI_kXX3pH8DmsdruKe59ffPdnPg3JJshsmX8lt5B0Y/pub?gid=400784065&single=true&output=csv'
   };
-  var BUILD = '20261119.0149';
+  var BUILD = '20261119.1518';
 
   // ---------- Errores: reporte central ----------
   // Todo error pasa por report(): consola, Sentry (si está configurado) y el registro anónimo.
@@ -1389,8 +1389,8 @@ a.tile.ask:hover { border-color: var(--orange); }
   var ZONES = [
     { id: 'scl', label: 'Santiago' },
     { id: 'serena', label: 'La Serena y Coquimbo' },
-    { id: 'valpo', label: 'Valparaíso y Viña', left: true },
-    { id: 'pichilemu', label: 'Pichilemu', left: true },
+    { id: 'valpo', label: 'Valparaíso y Viña' },
+    { id: 'pichilemu', label: 'Pichilemu' },
     { id: 'conce', label: 'Concepción' },
     { id: 'rios', label: 'Valdivia y Panguipulli' },
     { id: 'austral', label: 'Carretera Austral' }
@@ -1832,7 +1832,7 @@ a.tile.ask:hover { border-color: var(--orange); }
     layer = L.layerGroup().addTo(map);
     map.on('click', function () { if (!isMobile() && state.sel) deselect(); });
     function pinZoom() { var z = map.getZoom(); $('map').setAttribute('data-z', z <= 12 ? 's' : z <= 14 ? 'm' : 'l'); }
-    map.on('zoomend', pinZoom);
+    map.on('zoomend', pinZoom); map.on('zoomend', function () { declutter(); });
     syncMarkers(true); pinZoom();
   }
   var tiles = [], tilesFor = null;
@@ -1896,9 +1896,23 @@ a.tile.ask:hover { border-color: var(--orange); }
     map.fitBounds(pts, opt);
     pendingFit = null;
   }
+  // Todo Chile: las zonas cercanas (Santiago, Valparaíso, Pichilemu) se tapan en pantallas chicas;
+  // se empujan hacia abajo lo justo para que cada burbuja se lea.
+  var bubbles = [];
+  function declutter() {
+    if (!map || !bubbles.length) return;
+    var last = -1e9;
+    bubbles.map(function (m) { return { m: m, y: map.latLngToContainerPoint(m.getLatLng()).y }; })
+      .sort(function (a, b) { return a.y - b.y; })
+      .forEach(function (o) {
+        var y = Math.max(o.y, last + 50), el = o.m.getElement(), zb = el && el.querySelector('.zb');
+        if (zb) zb.style.marginTop = Math.round(y - o.y) + 'px';
+        last = y;
+      });
+  }
   function syncMarkers(fit) {
     if (!map) return;
-    layer.clearLayers(); markers = {};
+    layer.clearLayers(); markers = {}; bubbles = [];
     var pts = [];
     if (state.zone === 'all' && !state.q.trim() && !state.savedOnly && !state.me) {
       // Todo Chile: una burbuja por zona con su número de lugares; al tocarla se entra a la zona.
@@ -1911,10 +1925,11 @@ a.tile.ask:hover { border-color: var(--orange); }
           html: '<div class="zb' + (l.length < FEW ? ' sm' : '') + (z.left ? ' lft' : '') + '"><b>' + l.length + '</b><span>' + esc(z.label) + '</span></div>' });
         var m = L.marker([lat, lng], { icon: icon, title: z.label + ': ' + l.length + (l.length === 1 ? ' lugar' : ' lugares'), riseOnHover: true });
         m.on('click', function (e) { if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent); setZone(z.id); });
-        m.addTo(layer); pts.push([lat, lng]);
+        m.addTo(layer); pts.push([lat, lng]); bubbles.push(m);
       });
       if (meMarker) meMarker.addTo(map);
       if (fit) fitTo(pts);
+      setTimeout(declutter, 0);
       return;
     }
     visible().forEach(function (p) {
